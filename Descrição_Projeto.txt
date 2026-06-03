@@ -1,0 +1,66 @@
+Tive uma ideia para documentação dos meus Dashboards feito no powerBI
+
+Essa ideia se trata de um sistema, onde vamos cadastrando informações dos BIs, ele vai completano um README pra mim por exemplo, eu só coloco as informações, e ele gera o README montado pra mim.
+
+Segue as ideias principais que eu tive:
+
+Ele vai ter 6 seções, percorrendo uma de cada vez, em ordem:
+
+Projeto > KPIs > Medidas DAX > Queries > Relacionamentos > Exportar
+
+Cada seção será responsável por cadastrar os dados, e a função exportar, vai gerar o README final bem montado.
+
+Vamos falar de seção por seção:
+
+Projeto:
+
+Informações do projeto
+Nome do relatório
+Ex: Relatório de Vendas Regional
+Área / departamento
+Ex: Comercial, Financeiro, RH...
+Responsável
+Nome do analista/desenvolvedor
+Data de criação
+mm/aaaa
+Última atualização
+mm/aaaa
+Objetivo do relatório
+Descreva o propósito do relatório, o público-alvo e as decisões que ele apoia...
+Fontes de dados
+Ex: SQL Server — base Vendas
+Excel — planilha de metas
+API — CRM Salesforce
+
+Essa seção será responsável por pegar as informações principais do projeto, claro, essa são as que eu lembrei, se houver mais sugestões, serão muito bem-vindas, quanto mais detalhado a documentação, melhor.
+
+------
+
+KPIs:
+
+KPI 1
+
+Nome do KPI
+Ex: Total de Vendas
+Tipo de visual:
+Cartão (Card)
+Medidor (Gauge)
+KPI Nativo
+Outro
+O que mede
+Ex: Soma do faturamento bruto no período
+Objetivo / meta
+Ex: Monitorar receita vs meta mensal
+Medida DAX vinculada
+Ex: [Total Vendas]
+Regras de negócio
+Ex: Considera apenas vendas com status = Aprovado
+Exclui devoluções
+Filtro de data aplicado pelo slicer de período
+Observações / contexto
+Notas adicionais, condicionais de cor, alertas...
+
+------
+
+Medidas DAX:
+
