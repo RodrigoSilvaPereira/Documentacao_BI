@@ -1,66 +1,462 @@
-Tive uma ideia para documentação dos meus Dashboards feito no powerBI
+Tive uma ideia para documentação dos meus Dashboards feitos no Power BI.
 
-Essa ideia se trata de um sistema, onde vamos cadastrando informações dos BIs, ele vai completano um README pra mim por exemplo, eu só coloco as informações, e ele gera o README montado pra mim.
+Essa ideia se trata de um sistema onde vamos cadastrando informações dos BIs. Conforme as informações são preenchidas, o sistema vai montando automaticamente uma documentação completa do projeto. Por exemplo, eu apenas cadastro os dados e ele gera um README totalmente estruturado para mim.
 
 Segue as ideias principais que eu tive:
 
-Ele vai ter 6 seções, percorrendo uma de cada vez, em ordem:
+Ele vai ter 7 seções, percorrendo uma de cada vez, em ordem:
 
-Projeto > KPIs > Medidas DAX > Queries > Relacionamentos > Exportar
+Projeto > KPIs > Queries > Relacionamentos > Medidas DAX > Páginas > Exportar
 
-Cada seção será responsável por cadastrar os dados, e a função exportar, vai gerar o README final bem montado.
+Cada seção será responsável por cadastrar os dados, e a função Exportar será responsável por gerar a documentação final.
 
 Vamos falar de seção por seção:
+
+---
 
 Projeto:
 
 Informações do projeto
+
 Nome do relatório
+
 Ex: Relatório de Vendas Regional
-Área / departamento
+
+Área / Departamento
+
 Ex: Comercial, Financeiro, RH...
+
 Responsável
+
 Nome do analista/desenvolvedor
+
 Data de criação
+
 mm/aaaa
+
 Última atualização
+
 mm/aaaa
+
 Objetivo do relatório
-Descreva o propósito do relatório, o público-alvo e as decisões que ele apoia...
+
+Descreva o propósito do relatório, o público-alvo e as decisões que ele apoia.
+
 Fontes de dados
-Ex: SQL Server — base Vendas
-Excel — planilha de metas
+
+Ex:
+
+SQL Server — Base de Vendas
+
+Excel — Planilha de Metas
+
 API — CRM Salesforce
 
-Essa seção será responsável por pegar as informações principais do projeto, claro, essa são as que eu lembrei, se houver mais sugestões, serão muito bem-vindas, quanto mais detalhado a documentação, melhor.
+Observações gerais
 
-------
+Informações adicionais importantes sobre o projeto.
+
+Essa seção será responsável por armazenar todas as informações principais do relatório.
+
+---
 
 KPIs:
+
+Botão (Adicionar KPI) -> Permite cadastrar vários KPIs
 
 KPI 1
 
 Nome do KPI
-Ex: Total de Vendas
-Tipo de visual:
-Cartão (Card)
-Medidor (Gauge)
-KPI Nativo
-Outro
-O que mede
-Ex: Soma do faturamento bruto no período
-Objetivo / meta
-Ex: Monitorar receita vs meta mensal
-Medida DAX vinculada
-Ex: [Total Vendas]
-Regras de negócio
-Ex: Considera apenas vendas com status = Aprovado
-Exclui devoluções
-Filtro de data aplicado pelo slicer de período
-Observações / contexto
-Notas adicionais, condicionais de cor, alertas...
 
-------
+Ex: Total de Vendas
+
+Tipo de visual
+
+* Cartão (Card)
+* Medidor (Gauge)
+* KPI Nativo
+* Outro
+
+O que mede
+
+Ex: Soma do faturamento bruto no período
+
+Objetivo / Meta
+
+Ex: Monitorar receita versus meta mensal
+
+Regras de negócio
+
+Ex:
+
+Considera apenas vendas com status = Aprovado
+
+Exclui devoluções
+
+Filtro de data aplicado pelo slicer de período
+
+Observações / Contexto
+
+Notas adicionais, condicionais de cor, alertas, limites e interpretações.
+
+---
+
+Queries:
+
+Botão (Adicionar Query) -> Permite cadastrar várias Queries
+
+Query 1
+
+Nome da tabela / query
+
+Ex: fVendas
+
+Fonte de dados
+
+Permite selecionar entre diversas opções:
+
+* SQL Server
+* PostgreSQL
+* MySQL
+* Oracle
+* Excel / CSV
+* SharePoint
+* API / Web
+* Azure SQL
+* Databricks
+* Snowflake
+* Outros
+
+Caso seja selecionado "Outros", exibir campo para digitação.
+
+Descrição da tabela
+
+Ex: Fato de vendas com granularidade por pedido
+
+Código da Query (SQL ou M)
+
+SELECT * FROM vendas WHERE ano = 2024
+
+Transformações aplicadas (Power Query)
+
+Ex:
+
+Removidas colunas desnecessárias
+
+Tipo da coluna Data alterado para Date
+
+Filtro Status <> Cancelado
+
+Colunas principais
+
+Ex:
+
+IDPedido
+
+Data
+
+IDCliente
+
+Valor
+
+Status
+
+Observações
+
+Informações complementares sobre a tabela ou processo de carga.
+
+---
+
+Relacionamentos:
+
+Botão (Adicionar Relacionamento) -> Permite cadastrar vários relacionamentos
+
+Relacionamento 1
+
+Tabela de origem
+
+Ex: fVendas
+
+Tabela de destino
+
+Ex: dClientes
+
+Coluna de origem
+
+Ex: IDCliente
+
+Coluna de destino
+
+Ex: IDCliente
+
+Cardinalidade
+
+* Muitos para Um (*:1)
+* Um para Muitos (1:*)
+* Um para Um (1:1)
+* Muitos para Muitos (*:*)
+
+Direção do filtro
+
+* Única (→)
+* Bidirecional (<-->)
+
+Relacionamento ativo
+
+* Sim
+* Não
+
+Observações
+
+Ex:
+
+Chave ativa utilizada para filtrar vendas por cliente.
+
+---
 
 Medidas DAX:
 
+Botão (Adicionar Medida DAX) -> Permite cadastrar várias medidas
+
+Medida 1
+
+Nome da medida
+
+Ex: Total Vendas
+
+Tabela
+
+Ex: fVendas
+
+Descrição
+
+O que a medida calcula.
+
+Ex:
+
+Soma do valor líquido de todas as vendas aprovadas no período.
+
+Fórmula DAX
+
+Total Vendas =
+CALCULATE(
+SUM(fVendas[ValorLiquido]),
+fVendas[Status] = "Aprovado"
+)
+
+Dependências (outras medidas utilizadas)
+
+Ex:
+
+[Qtd Vendas]
+
+[Ticket Médio]
+
+KPIs relacionados
+
+Selecionar KPIs já cadastrados anteriormente.
+
+Observações / Comportamento esperado
+
+Ex:
+
+Retorna BLANK quando não há vendas no período selecionado.
+
+---
+
+Páginas:
+
+Botão (Adicionar Página) -> Permite cadastrar várias páginas do relatório
+
+Página 1
+
+Nome da página
+
+Ex: Resumo Executivo
+
+Objetivo da página
+
+Ex: Apresentar os principais indicadores para acompanhamento da diretoria.
+
+Descrição da página
+
+Ex: Página inicial contendo visão geral dos resultados comerciais.
+
+Captura da página
+
+Upload de imagem da página completa.
+
+Formatos aceitos:
+
+* PNG
+* JPG
+* JPEG
+
+---
+
+Visuais da Página
+
+Botão (Adicionar Visual)
+
+Visual 1
+
+Nome do visual
+
+Ex: Faturamento por Região
+
+Tipo de visual
+
+* Cartão (Card)
+* KPI
+* Tabela
+* Matriz
+* Gráfico de Barras
+* Gráfico de Colunas
+* Gráfico de Linhas
+* Gráfico de Área
+* Treemap
+* Pizza
+* Rosca
+* Gauge
+* Mapa
+* Segmentação de Dados (Slicer)
+* Outro
+
+Objetivo do visual
+
+Ex: Demonstrar o faturamento por região.
+
+Descrição do visual
+
+Ex: Gráfico que apresenta o faturamento consolidado por região comercial.
+
+KPIs utilizados
+
+Selecionar KPIs cadastrados anteriormente.
+
+Medidas DAX utilizadas
+
+Selecionar medidas cadastradas anteriormente.
+
+Tabelas utilizadas
+
+Selecionar tabelas cadastradas anteriormente.
+
+Campos utilizados
+
+Ex:
+
+Região
+
+Valor Venda
+
+Observações
+
+Ex:
+
+Ordenado do maior para o menor faturamento.
+
+Captura do visual
+
+Upload de imagem individual do visual.
+
+---
+
+Filtros da Página
+
+Botão (Adicionar Filtro)
+
+Filtro 1
+
+Nome do filtro
+
+Ex: Período
+
+Tipo
+
+* Segmentação de Dados (Slicer)
+* Filtro de Página
+* Filtro de Relatório
+* Filtro de Visual
+
+Campo utilizado
+
+Ex:
+
+dCalendario[Data]
+
+Descrição
+
+Ex:
+
+Permite selecionar o período de análise.
+
+Visuais afetados
+
+Selecionar os visuais cadastrados na página.
+
+Observações
+
+Ex:
+
+Seleção única habilitada.
+
+---
+
+Exportar
+
+Exportar documentação
+
+Escolha o formato desejado para gerar a documentação completa do projeto.
+
+HTML
+
+Documento visual interativo.
+
+Markdown
+
+Compatível com GitHub, Notion, Confluence e editores de texto.
+
+JSON
+
+Backup completo dos dados cadastrados.
+
+Pré-visualização
+
+Título
+
+Quantidade de KPIs
+
+Quantidade de Queries
+
+Quantidade de Relacionamentos
+
+Quantidade de Medidas DAX
+
+Quantidade de Páginas
+
+Quantidade de Visuais
+
+Quantidade de Filtros
+
+---
+
+Pronto! A ferramenta está completa.
+
+Veja o que você tem disponível em cada aba:
+
+Projeto — nome, área, responsável, datas, objetivo, fontes de dados e informações gerais do relatório.
+
+KPIs — para cada KPI você documenta o que mede, o objetivo, as regras de negócio e observações importantes.
+
+Queries — tabela/query, fonte de dados, código SQL ou M, transformações do Power Query e colunas principais.
+
+Relacionamentos — origem, destino, colunas, cardinalidade, direção do filtro e status do relacionamento.
+
+Medidas DAX — nome, tabela, descrição, fórmula completa, dependências, KPIs relacionados e comportamentos esperados.
+
+Páginas — documentação completa da camada visual do dashboard, incluindo páginas, visuais, indicadores, filtros, tabelas utilizadas, medidas utilizadas e capturas de tela.
+
+Exportar — gera toda a documentação do projeto em diferentes formatos.
+
+Você pode adicionar quantos KPIs, Queries, Relacionamentos, Medidas DAX, Páginas, Visuais e Filtros desejar antes de exportar.
