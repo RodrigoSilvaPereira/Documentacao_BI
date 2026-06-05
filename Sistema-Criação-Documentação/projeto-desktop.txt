@@ -531,7 +531,10 @@ Projeto-Exemplo
 └── imagens
     ├── paginas
     └── visuais
+
+
 Funcionalidades da V1
+
 Projeto
 Nome do relatório
 Área
@@ -541,77 +544,71 @@ Data de criação
 Objetivo
 Descrição geral
 Fontes de dados
+
 KPIs
-
 Cadastro de múltiplos KPIs:
-
 Nome
 Tipo de visual
 O que mede
 Objetivo
 Regras de negócio
 Observações
+
 Queries
-
 Cadastro de múltiplas queries:
-
 Nome
 Fonte de dados
 Descrição
 Código SQL/M
 Transformações
 Colunas
+
 Relacionamentos
-
 Cadastro de relacionamentos:
-
 Origem
 Destino
 Colunas
 Cardinalidade
 Direção do filtro
 Observações
+
 Medidas DAX
-
 Cadastro de medidas:
-
 Nome
 Tabela
 Descrição
 Fórmula DAX
 Dependências
 Comportamento esperado
+
 Páginas
-
 Cadastro de páginas do relatório:
-
 Nome
 Objetivo
 Descrição
 Print da página
+
 Visuais
-
 Dentro de cada página:
-
 Nome
 Tipo
 Medidas utilizadas
 Campos utilizados
 Observações
 Imagem do visual
+
 Filtros
-
 Dentro de cada página:
-
 Nome
 Tipo
 Campo
 Descrição
-Glossário
 
+Glossário
 Cadastro de termos de negócio.
 
 Gestão de Projetos
+
 Novo Projeto
 
 Cria automaticamente:
@@ -620,30 +617,24 @@ documentacao.json
 README.md
 imagens/
 exports/
+
 Abrir Projeto
-
 Seleciona uma pasta.
-
 A aplicação procura:
-
 documentacao.json
-
 e carrega os dados.
 
 Salvar Projeto
-
 Atualiza:
-
 documentacao.json
 Exportar Documentação
 
 Atualiza:
-
 README.md
-
 e cria um snapshot em:
 
 exports/
+
 Funcionalidades Futuras (V2)
 Exportação HTML
 Exportação PDF
