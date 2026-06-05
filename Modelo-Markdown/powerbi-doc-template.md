@@ -19,11 +19,9 @@
 
 [Descrição do objetivo do relatório, público-alvo e principais decisões que ele deve suportar]
 
-### Observações Gerais
+### Descrição Geral
 
-- [Observação 1]
-- [Observação 2]
-- [Observação 3]
+[Descrição geral do relatório, principais seções, KPIs destacados, etc.]
 
 ---
 
@@ -42,7 +40,7 @@
 - [Regra 2]
 - [Regra 3]
 
-**Observações:** [Observações específicas sobre o KPI, como alertas visuais, condicionais de cor, limites, etc.]
+> **Observações:** [Observações específicas sobre o KPI, como alertas visuais, condicionais de cor, limites, etc.]
 
 ---
 
@@ -72,7 +70,7 @@
 | [Coluna 2] | [Tipo] | [Descrição] |
 | [Coluna 3] | [Tipo] | [Descrição] |
 
-**Observações:** [Observações sobre a query, como volume de dados, periodicidade de carga, estratégia incremental, etc.]
+> **Observações:** [Observações sobre a query, como volume de dados, periodicidade de carga, estratégia incremental, etc.]
 
 ---
 
@@ -82,7 +80,7 @@
 |---|---|---|---|---|---|---|
 | [Tabela Origem] | [Tabela Destino] | [Coluna Origem] | [Coluna Destino] | [*:1 / 1:* / 1:1 / *:*] | [Única (→) / Bidirecional (↔)] | [Sim / Não] |
 
-> **Obs. [Tabela Origem] → [Tabela Destino]:** [Observações específicas sobre o relacionamento]
+> **Observações: [Tabela Origem] → [Tabela Destino]:** [Observações específicas sobre o relacionamento]
 
 ---
 
@@ -128,7 +126,7 @@
 | **Medidas utilizadas** | `[Medida 1]`, `[Medida 2]` |
 | **Campos** | `[Tabela[Coluna]]` |
 
-**Observações:** [Formatação condicional, ordenação, interações habilitadas, etc.]
+> **Observações:** [Formatação condicional, ordenação, interações habilitadas, etc.]
 
 ---
 
@@ -142,7 +140,7 @@
 | **Medidas utilizadas** | `[Medida 1]`, `[Medida 2]` |
 | **Campos** | `[Tabela[Coluna]]` |
 
-**Observações:** [Formatação condicional, ordenação, interações habilitadas, etc.]
+> **Observações:** [Formatação condicional, ordenação, interações habilitadas, etc.]
 
 ---
 
