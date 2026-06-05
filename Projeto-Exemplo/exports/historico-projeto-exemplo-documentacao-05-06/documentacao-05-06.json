@@ -1,0 +1,113 @@
+{
+  "projeto": {
+    "titulo_relatorio": "Título_1",
+    "area_departamento": "area_departamento",
+    "responsavel": "responsavel_relatorio",
+    "data_criacao": "data_criacao_relatorio",
+    "ultima_atualizacao": "data_ultima_atualizacao",
+    "fontes_dados_resumo": "fonte_dados_resumo",
+    "objetivo": "objetivo_relatorio",
+    "descricao_geral": "descricao_geral_relatorio",
+    "observacoes_gerais": "observacoes_gerais_relatorio"
+  },
+
+  "kpis": [
+    {
+      "titulo": "titulo_kpi",
+      "tipo_visual": "tipo_visual_kpi",
+      "o_que_mede": "medicao_kpi",
+      "objetivo_meta": "objetivo_meta_kpi",
+      "medida_dax_vinculada": "medida_dax_kpi",
+      "regras_negocio": ["Regra 1", "Regra 2", "Regra 3"],
+      "observacoes": "observacoes_kpi"
+    }
+  ],
+
+  "queries": [
+    {
+      "nome_tabela_query": "nome_tabela_query",
+      "fonte_dados": "fonte_dados",
+      "descricao_tabela": "descricao_tabela",
+      "codigo_query": "codigo_query",
+      "transformacoes_power_query": ["Transformação 1", "Transformação 2", "Transformação 3"],
+      "colunas_principais": [
+        {
+          "coluna": "coluna_1",
+          "tipo": "tipo_coluna_1",
+          "descricao": "descricao_coluna_1"
+        }
+      ],
+      "observacoes": "observacoes_query"
+    }
+  ],
+
+  "relacionamentos": [
+    {
+      "tabela_origem": "tabela_origem",
+      "tabela_destino": "tabela_destino",
+      "coluna_origem": "coluna_origem",
+      "coluna_destino": "coluna_destino",
+      "cardinalidade": "cardinalidade",
+      "direcao": "direcao",
+      "ativo": "ativo",
+      "observacoes": "observacoes_relacionamento"
+    }
+  ],
+
+  "medidas_dax": [
+    {
+      "nome_medida": "nome_medida_dax",
+      "tabela": "nome_tabela_medida",
+      "descricao": "descricao_medida_dax",
+      "formula_dax": "formula_dax",
+      "dependencias": ["dependencia_1", "dependencia_2", "dependencia_3"],
+      "kpis_relacionados": ["kpi_relacionado_1", "kpi_relacionado_2"],
+      "comportamento_esperado": "Descricao_comportamento_esperado_medida"
+    }
+  ],
+
+  "paginas": [
+    {
+      "titulo_pagina": "titulo_pagina",
+      "objetivo": "objetivo_pagina",
+      "descricao": "descricao_pagina",
+      "captura_pagina": {
+        "arquivo": "arquivo_pagina",
+        "caminho": "caminho_pagina"
+      },
+      "visuais": [
+        {
+          "nome_visual": "nome_visual",
+          "tipo_visual": "tipo_visual",
+          "medidas_utilizadas": ["nome_medida_dax"],
+          "campos": ["coluna_1"],
+          "observacoes": "observacoes_visual",
+          "captura_visual": {
+            "arquivo": "arquivo_visual",
+            "caminho": "caminho_visual"
+          }
+        }
+      ],
+      "filtros": [
+        {
+          "nome_filtro": "nome_filtro",
+          "tipo": "tipo_filtro",
+          "campo": "coluna_1",
+          "descricao": "descricao_filtro"
+        }
+      ]
+    }
+  ],
+
+  "glossario": [
+    {
+      "termo": "termo_glossario",
+      "definicao": "definicao_glossario"
+    }
+  ],
+
+  "documentacao": {
+    "documentado_por": "responsavel_documentacao",
+    "ultima_revisao": "ultima_revisao_documentacao"
+  }
+}
