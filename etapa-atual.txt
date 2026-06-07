@@ -1,0 +1,551 @@
+inicie o projeto e instalei algumas depêndencias:
+
+Etapa 1 — Criação do Projeto
+Pré-requisitos
+
+Instalar:
+
+Node.js
+
+Versão recomendada:
+
+node -v
+
+= 22
+
+Rust
+rustc --version
+
+Se não tiver:
+
+winget install Rustlang.Rustup
+Visual Studio Build Tools
+
+Necessário para o Tauri no Windows.
+
+Instale:
+
+Desktop Development with C++
+Criando o projeto
+1. Criar projeto React + TypeScript
+npm create vite@latest bi-documentation-studio -- --template react-ts
+
+Entrar na pasta:
+
+cd bi-documentation-studio
+2. Instalar dependências principais
+npm install
+3. Adicionar Tauri v2
+npm install @tauri-apps/api
+npm install -D @tauri-apps/cli
+
+Inicializar:
+
+npx tauri init
+
+Escolha:
+
+Frontend: Vite
+Dev Command: npm run dev
+Build Command: npm run build
+Dist Folder: ../dist
+4. Instalar Tailwind
+npm install tailwindcss @tailwindcss/vite
+5. Instalar Zustand
+npm install zustand immer
+6. Instalar React Router
+npm install react-router-dom
+7. Instalar utilitários
+npm install date-fns
+npm install lucide-react
+npm install clsx
+npm install uuid
+8. Instalar Radix UI
+
+Inicialmente:
+
+npm install @radix-ui/react-dialog
+npm install @radix-ui/react-select
+npm install @radix-ui/react-tooltip
+
+Depois adicionamos os demais.
+
+ficou assim então:
+
+Listagem de caminhos de pasta
+O número de série do volume é CC24-3E2C
+C:.
+|   estrutura.txt
+|   
+\---bi-documentation-studio
+    |   .gitignore
+    |   eslint.config.js
+    |   index.html
+    |   package-lock.json
+    |   package.json
+    |   README.md
+    |   tsconfig.app.json
+    |   tsconfig.json
+    |   tsconfig.node.json
+    |   vite.config.ts
+    |             
+    +---public
+    |       favicon.svg
+    |       icons.svg
+    |       
+    +---src
+    |   |   App.tsx
+    |   |   index.css
+    |   |   main.tsx
+    |   |   
+    |   +---assets
+    |   +---components
+    |   |   +---common
+    |   |   +---layout
+    |   |   |       AppShell.tsx
+    |   |   |       Sidebar.tsx
+    |   |   |       TopBar.tsx
+    |   |   |       
+    |   |   \---sections
+    |   |       +---exportar
+    |   |       +---glossario
+    |   |       +---kpis
+    |   |       +---medidas-dax
+    |   |       +---paginas
+    |   |       +---projeto
+    |   |       +---queries
+    |   |       \---relacionamentos
+    |   +---generators
+    |   +---hooks
+    |   +---models
+    |   |       app.ts
+    |   |       enums.ts
+    |   |       schema.ts
+    |   |       
+    |   +---pages
+    |   |   +---Editor
+    |   |   |       Editor.tsx
+    |   |   |       
+    |   |   \---ProjectManager
+    |   |           ProjectManager.tsx
+    |   |           
+    |   +---routes
+    |   +---services
+    |   +---store
+    |   |       useAppStore.ts
+    |   |       useDocStore.ts
+    |   |       
+    |   \---utils
+    \---src-tauri
+        |   .gitignore
+        |   build.rs
+        |   Cargo.toml
+        |   tauri.conf.json
+        |   
+        +---capabilities
+        |       default.json
+        |       
+        +---icons
+        |       128x128.png
+        |       128x128@2x.png
+        |       32x32.png
+        |       icon.icns
+        |       icon.ico
+        |       icon.png
+        |       Square107x107Logo.png
+        |       Square142x142Logo.png
+        |       Square150x150Logo.png
+        |       Square284x284Logo.png
+        |       Square30x30Logo.png
+        |       Square310x310Logo.png
+        |       Square44x44Logo.png
+        |       Square71x71Logo.png
+        |       Square89x89Logo.png
+        |       StoreLogo.png
+        |       
+        \---src
+                lib.rs
+                main.rs
+                
+
+BI Documentation Studio — Status Atual do Desenvolvimento
+Objetivo do Sistema
+
+Criar uma aplicação desktop para documentar projetos Power BI de forma estruturada.
+
+A documentação será cadastrada através de formulários e armazenada em:
+
+documentacao.json
+
+A partir desse JSON, o sistema será capaz de gerar:
+
+README.md
+
+e manter um histórico de exportações.
+
+Stack Tecnológica Definida
+Frontend
+React
+TypeScript
+Desktop
+Tauri v2
+Estilização
+Tailwind CSS
+
+(ainda será configurado)
+
+Gerenciamento de Estado
+Zustand
+Immer
+
+(ainda será configurado)
+
+Navegação
+React Router
+
+(ainda será configurado)
+
+Componentes
+Radix UI
+
+(será usado posteriormente)
+
+Arquitetura Definida
+
+O sistema não utilizará:
+
+❌ Banco de dados
+
+❌ Backend
+
+❌ API
+
+❌ Servidor
+
+Cada projeto será uma pasta local.
+
+Exemplo:
+
+Projeto-RH/
+│
+├── documentacao.json
+├── README.md
+│
+├── exports/
+│
+└── imagens/
+Estrutura de Projeto Definida
+
+Atualmente você já criou:
+
+src
+│
+├── assets
+│
+├── components
+│   ├── common
+│   ├── layout
+│   └── sections
+│
+├── generators
+│
+├── hooks
+│
+├── models
+│
+├── pages
+│
+├── routes
+│
+├── services
+│
+├── store
+│
+└── utils
+Layouts Criados
+
+Você já criou os arquivos base:
+
+components/layout/
+│
+├── AppShell.tsx
+├── Sidebar.tsx
+└── TopBar.tsx
+
+Esses componentes formarão o layout principal da aplicação.
+
+Seções da Aplicação Definidas
+
+Você definiu as seções que serão exibidas na Sidebar:
+
+Projeto
+KPIs
+Queries
+Relacionamentos
+Medidas DAX
+Páginas
+Glossário
+Exportar
+
+Fluxo:
+
+Projeto
+↓
+KPIs
+↓
+Queries
+↓
+Relacionamentos
+↓
+Medidas DAX
+↓
+Páginas
+↓
+Glossário
+↓
+Exportar
+Estrutura de Páginas Criada
+
+Você já criou:
+
+pages/
+│
+├── Editor/
+│   └── Editor.tsx
+│
+└── ProjectManager/
+    └── ProjectManager.tsx
+ProjectManager
+
+Será a tela inicial.
+
+Responsável por:
+
+Novo Projeto
+Abrir Projeto
+Projetos Recentes
+Editor
+
+Será a tela principal de edição.
+
+Responsável por exibir:
+
+TopBar
+Sidebar
+Seção Atual
+Modelagem Definida
+
+Você criou:
+
+models/
+│
+├── schema.ts
+├── enums.ts
+└── app.ts
+schema.ts
+
+Contém o contrato completo do:
+
+documentacao.json
+
+incluindo:
+
+Projeto
+KPIs
+Queries
+Relacionamentos
+Medidas DAX
+Páginas
+Glossário
+Metadados
+enums.ts
+
+Contém:
+
+Tipos de Visual
+Tipos de Filtro
+Fontes de Dados
+Cardinalidades
+Direções de Filtro
+app.ts
+
+Contém o estado interno da aplicação:
+
+Projeto aberto
+Projetos recentes
+Seção ativa
+Alterações pendentes
+Estado Global Definido
+
+Você criou:
+
+store/
+│
+├── useAppStore.ts
+└── useDocStore.ts
+useAppStore
+
+Controlará:
+
+Projeto aberto
+Projetos recentes
+Seção ativa
+useDocStore
+
+Controlará:
+
+documentacao.json completo
+
+em memória.
+
+Estrutura de Seções Criada
+
+Você já preparou:
+
+components/sections/
+│
+├── projeto
+├── kpis
+├── queries
+├── relacionamentos
+├── medidas-dax
+├── paginas
+├── glossario
+└── exportar
+
+Isso evita reorganizações futuras.
+
+Estrutura de Serviços Planejada
+
+Ainda vazia, mas definida:
+
+services/
+│
+├── fileService.ts
+├── projectService.ts
+├── imageService.ts
+└── exportService.ts
+fileService
+
+Leitura e escrita de arquivos.
+
+projectService
+
+Criar, abrir e salvar projetos.
+
+imageService
+
+Copiar imagens para:
+
+imagens/
+exportService
+
+Exportação e histórico.
+
+Estrutura de Generators Planejada
+generators/
+│
+└── markdownGenerator.ts
+
+Responsável por converter:
+
+documentacao.json
+
+em:
+
+README.md
+Estrutura do Projeto Exportado Definida
+
+Ao criar um projeto, o sistema deverá gerar:
+
+Projeto-Exemplo/
+│
+├── documentacao.json
+├── README.md
+│
+├── exports/
+│   ├── historico-05-06/
+│   └── historico-06-06/
+│
+└── imagens/
+    ├── paginas/
+    └── visuais/
+Melhorias Arquiteturais Aprovadas
+
+Durante a análise você decidiu incluir:
+
+IDs únicos
+
+Todas as entidades possuem:
+
+id
+
+para evitar referências quebradas.
+
+versionamento do schema
+{
+  "versao_schema": "1.0.0"
+}
+referências cruzadas por ID
+
+Exemplo:
+
+Visual
+↓
+Medida DAX
+↓
+KPI
+
+por UUID.
+
+fontes de dados estruturadas
+
+Em vez de:
+
+"fonte": "SQL Server"
+
+agora:
+
+[
+  {
+    "tipo": "SQL Server",
+    "descricao": "Base de Vendas"
+  }
+]
+O que falta fazer agora
+
+Você terminou praticamente toda a preparação do projeto.
+
+A próxima sprint é:
+
+Sprint 2
+
+Implementar:
+
+React Router
+AppShell
+Sidebar
+TopBar
+ProjectManager
+Editor
+
+e permitir navegar entre:
+
+/
+
+e
+
+/editor
+Situação Atual
+
+Se eu tivesse que dar um percentual de progresso:
+
+Planejamento:       100%
+Arquitetura:        100%
+Modelagem:          100%
+Estrutura:          100%
+
+Interface:           0%
+Funcionalidades:     0%
+Persistência:        0%
+Exportação:          0%
