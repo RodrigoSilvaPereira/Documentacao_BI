@@ -66,7 +66,7 @@ export const useDocStore = create<DocStore>()(
     resetAlteracoes: () =>
       set((s) => { s.temAlteracoes = false; }),
 
-    // ── Projeto ──────────────────────────────────────────────────────────
+    // -- Projeto ----------------------------------------------------------------
     updateProjeto: (dados) =>
       set((s) => {
         if (!s.documento) return;
@@ -74,7 +74,7 @@ export const useDocStore = create<DocStore>()(
         s.temAlteracoes = true;
       }),
 
-    // ── KPIs ─────────────────────────────────────────────────────────────
+    // -- KPIs ----------------------------------------------------------------
     adicionarKPI: (kpi) =>
       set((s) => { if (!s.documento) return; s.documento.kpis.push(kpi); s.temAlteracoes = true; }),
 
@@ -92,7 +92,7 @@ export const useDocStore = create<DocStore>()(
         s.temAlteracoes = true;
       }),
 
-    // ── Queries ──────────────────────────────────────────────────────────
+    // -- Queries ----------------------------------------------------------------
     adicionarQuery: (query) =>
       set((s) => { if (!s.documento) return; s.documento.queries.push(query); s.temAlteracoes = true; }),
 
@@ -110,7 +110,7 @@ export const useDocStore = create<DocStore>()(
         s.temAlteracoes = true;
       }),
 
-    // ── Relacionamentos ───────────────────────────────────────────────────
+    // -- Relacionamentos ----------------------------------------------------------------
     adicionarRelacionamento: (rel) =>
       set((s) => { if (!s.documento) return; s.documento.relacionamentos.push(rel); s.temAlteracoes = true; }),
 
@@ -128,7 +128,7 @@ export const useDocStore = create<DocStore>()(
         s.temAlteracoes = true;
       }),
 
-    // ── Medidas DAX ───────────────────────────────────────────────────────
+    // -- Medidas DAX ----------------------------------------------------------------
     adicionarMedida: (medida) =>
       set((s) => { if (!s.documento) return; s.documento.medidas_dax.push(medida); s.temAlteracoes = true; }),
 
@@ -146,7 +146,7 @@ export const useDocStore = create<DocStore>()(
         s.temAlteracoes = true;
       }),
 
-    // ── Páginas ───────────────────────────────────────────────────────────
+    // -- Páginas ----------------------------------------------------------------
     adicionarPagina: (pagina) =>
       set((s) => { if (!s.documento) return; s.documento.paginas.push(pagina); s.temAlteracoes = true; }),
 
@@ -164,7 +164,7 @@ export const useDocStore = create<DocStore>()(
         s.temAlteracoes = true;
       }),
 
-    // ── Glossário ─────────────────────────────────────────────────────────
+    // -- Glossário ----------------------------------------------------------------
     adicionarTermo: (termo) =>
       set((s) => { if (!s.documento) return; s.documento.glossario.push(termo); s.temAlteracoes = true; }),
 

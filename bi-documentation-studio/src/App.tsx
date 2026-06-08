@@ -3,7 +3,7 @@ import { ProjectManager } from '@pages/ProjectManager/ProjectManager';
 import { Editor }         from '@pages/Editor/Editor';
 import { useAppStore }    from '@store/useAppStore';
 
-// HashRouter é mais confiável em webviews desktop (Tauri)
+// HashRouter usado para evitar problemas de roteamento em ambientes sem configuração de servidor (como Electron ou GitHub Pages).
 export default function App() {
   const projetoAberto = useAppStore((s) => s.projetoAberto);
 
