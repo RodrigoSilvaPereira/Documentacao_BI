@@ -1,26 +1,26 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Capability for main window",
+  "description": "Main capability",
   "windows": ["main"],
   "permissions": [
-    "core:default",
-    "core:fs:default",
+    "core:path:default",
     "core:event:default",
     "core:window:default",
     "core:app:default",
     "core:resources:default",
-    "core:dialog:default",
 
-    "core:fs:allow-read-text-file",
-    "core:fs:allow-write-text-file",
-    "core:fs:allow-exists",
-    "core:fs:allow-read-dir",
-    "core:fs:allow-copy-file",
-    "core:fs:allow-rename",
-    "core:fs:allow-remove",
+    "fs:default",
+    "fs:allow-read-text-file",
+    "fs:allow-write-text-file",
+    "fs:allow-create-dir",
+    "fs:allow-read-dir",
+    "fs:allow-exists",
+    "fs:allow-copy-file",
+    "fs:allow-rename",
+    "fs:allow-remove",
 
-    "core:dialog:allow-open",
-    "core:dialog:allow-save"
+    "dialog:allow-open",
+    "dialog:allow-save"
   ]
 }
