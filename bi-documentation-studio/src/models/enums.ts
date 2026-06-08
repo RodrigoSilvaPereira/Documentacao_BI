@@ -1,4 +1,4 @@
-// ── Tipos de valor ──────────────────────────────────────────────────────────
+// ---- Tipos de valor -----------------------------------------------
 
 export type TipoVisualKPI   = 'card' | 'gauge' | 'kpi_nativo' | 'outro';
 export type DirecaoFiltro   = 'unica' | 'bidirecional';
@@ -25,7 +25,7 @@ export type TipoVisual =
   | 'outro';
 
 
-// ── Labels para exibição na UI ──────────────────────────────────────────────
+// ---- Labels para exibição na UI -----------------------------------------------
 
 export const LABELS_CARDINALIDADE: Record<Cardinalidade, string> = {
   muitos_para_um:     'Muitos para Um (*:1)',
@@ -105,7 +105,7 @@ export const LABELS_TIPO_FILTRO: Record<TipoFiltro, string> = {
   filtro_visual:   'Filtro de Visual',
 };
 
-// ── Arrays prontos para componentes Select ──────────────────────────────────
+// ---- Arrays prontos para componentes Select -----------------------------------------------
 
 export const OPCOES_FONTE_DADOS = Object.entries(LABELS_FONTE_DADOS).map(
   ([value, label]) => ({ value: value as FonteDadosQuery, label }),
