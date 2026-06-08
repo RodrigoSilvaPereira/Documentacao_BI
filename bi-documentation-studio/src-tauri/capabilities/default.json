@@ -1,25 +1,26 @@
 {
-  "$schema": "https://schema.tauri.app/config/2",
+  "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Capability for the main window",
+  "description": "Capability for main window",
   "windows": ["main"],
   "permissions": [
-    "path:default",
-    "event:default",
-    "window:default",
-    "app:default",
-    "resources:default",
-    "fs:default",
-    "fs:allow-read-text-file",
-    "fs:allow-write-text-file",
-    "fs:allow-create-dir",
-    "fs:allow-read-dir",
-    "fs:allow-exists",
-    "fs:allow-copy-file",
-    "fs:allow-rename",
-    "fs:allow-remove",
-    "dialog:default",
-    "dialog:allow-open",
-    "dialog:allow-save"
+    "core:default",
+    "core:fs:default",
+    "core:event:default",
+    "core:window:default",
+    "core:app:default",
+    "core:resources:default",
+    "core:dialog:default",
+
+    "core:fs:allow-read-text-file",
+    "core:fs:allow-write-text-file",
+    "core:fs:allow-exists",
+    "core:fs:allow-read-dir",
+    "core:fs:allow-copy-file",
+    "core:fs:allow-rename",
+    "core:fs:allow-remove",
+
+    "core:dialog:allow-open",
+    "core:dialog:allow-save"
   ]
 }
