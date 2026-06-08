@@ -1348,14 +1348,6 @@ e
 /editor
 Situação Atual
 
-Se eu tivesse que dar um percentual de progresso:
-
-Planejamento:       100%
-Arquitetura:        100%
-Modelagem:          100%
-Estrutura:          100%
-
-Interface:           0%
-Funcionalidades:     0%
-Persistência:        0%
-Exportação:          0%
+Estou começando a configurar os src-tauri com o tailwindcss, já comecei a editar alguns arquivos,
+também já coloquei código em alguns arquivos criando algumas telas como: ---
+E também a configuração de tela nas seguintes pastas: ---
