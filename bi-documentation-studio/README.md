@@ -265,10 +265,10 @@ npm run tauri build
 
 ## V1
 
-- [X] Criação de projetos
-- [X] Abertura de projetos
-- [X] Modelagem do JSON
-- [X] Modelagem do README.md
+- [X] ~~Criação de projetos~~
+- [X] ~~Abertura de projetos~~
+- [X] ~~Modelagem do JSON~~
+- [X] ~~Modelagem do README.md~~
 - [ ] CRUD de Projeto
 - [ ] CRUD de KPIs
 - [ ] CRUD de Queries
