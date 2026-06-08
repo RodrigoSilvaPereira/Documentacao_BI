@@ -11,10 +11,19 @@ export type FonteDadosQuery =
   | 'databricks' | 'snowflake'  | 'outro';
 
 export type TipoVisual =
-  | 'card'    | 'kpi'    | 'tabela'  | 'matriz'
-  | 'barras'  | 'colunas'| 'linhas'  | 'area'
-  | 'treemap' | 'pizza'  | 'rosca'   | 'gauge'
-  | 'mapa'    | 'slicer' | 'outro';
+  | 'cartao' | 'indicador' | 'kpi' | 'tabela'
+  | 'matriz' | 'barrasClusterizado' | 'colunasClusterizado' | 'linhas'
+  | 'barrasEmpilhadas' | 'colunasEmpilhadas' | 'barras100Empilhadas'
+  | 'colunas100Empilhadas' | 'area' | 'areaEmpilhado'
+  | 'area100Empilhado' | 'colunasAgrupadasLinha'
+  | 'colunasEmpilhadasLinha' | 'pizza' | 'rosca'
+  | 'treemap' | 'dispersao' | 'cascata'
+  | 'funil' | 'mapa' | 'mapaCoropletico'
+  | 'azureMapas' | 'faixas' | 'influenciadores'
+  | 'arvoreHierarquica' | 'metas' | 'narrativas'
+  | 'visualPython' | 'visualR' | 'imagem'
+  | 'outro';
+
 
 // ── Labels para exibição na UI ──────────────────────────────────────────────
 
@@ -40,11 +49,48 @@ export const LABELS_FONTE_DADOS: Record<FonteDadosQuery, string> = {
 };
 
 export const LABELS_TIPO_VISUAL: Record<TipoVisual, string> = {
-  card: 'Cartão (Card)', kpi:    'KPI Nativo',         tabela:  'Tabela',
-  matriz: 'Matriz',      barras: 'Gráfico de Barras',  colunas: 'Gráfico de Colunas',
-  linhas: 'Gráfico de Linhas', area: 'Gráfico de Área', treemap: 'Treemap',
-  pizza:  'Pizza',       rosca:  'Rosca',              gauge:   'Medidor (Gauge)',
-  mapa:   'Mapa',        slicer: 'Segmentação (Slicer)', outro:  'Outro',
+  cartao: 'Cartão', indicador: 'Indicador', kpi: 'KPI',
+  tabela: 'Tabela', matriz: 'Matriz', linhas: 'Gráfico de Linhas',
+
+  barrasClusterizado: 'Gráfico de Barras Clusterizado',
+  colunasClusterizado: 'Gráfico de Colunas Clusterizado',
+  barrasEmpilhadas: 'Gráfico de Barras Empilhadas',
+  colunasEmpilhadas: 'Gráfico de Colunas Empilhadas',
+  barras100Empilhadas: 'Gráfico de Barras 100% Empilhadas',
+  colunas100Empilhadas: 'Gráfico de Colunas 100% Empilhadas',
+
+  area: 'Gráfico de Área',
+  areaEmpilhado: 'Gráfico de Área Empilhada',
+  area100Empilhado: 'Gráfico de Área 100% Empilhada',
+
+  colunasAgrupadasLinha: 'Colunas Agrupadas e Linha',
+  colunasEmpilhadasLinha: 'Colunas Empilhadas e Linha',
+
+  pizza: 'Gráfico de Pizza',
+  rosca: 'Gráfico de Rosca',
+  treemap: 'Treemap',
+
+  dispersao: 'Gráfico de Dispersão',
+  cascata: 'Gráfico de Cascata',
+  funil: 'Funil',
+
+  mapa: 'Mapa',
+  mapaCoropletico: 'Mapa Coroplético',
+  azureMapas: 'Azure Maps',
+
+  faixas: 'Gráfico de Faixas',
+
+  influenciadores: 'Principais Influenciadores',
+  arvoreHierarquica: 'Árvore de Decomposição',
+
+  metas: 'Scorecard (Metas)',
+  narrativas: 'Narrativa Inteligente',
+
+  visualPython: 'Visual Python',
+  visualR: 'Visual R',
+
+  imagem: 'Imagem',
+  outro: 'Outro'
 };
 
 export const LABELS_TIPO_VISUAL_KPI: Record<TipoVisualKPI, string> = {
