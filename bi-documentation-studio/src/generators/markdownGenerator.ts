@@ -7,11 +7,11 @@ export function gerarMarkdown(doc: Documentacao): string {
 
   const add = (...linhas: string[]) => L.push(...linhas);
 
-  // ── Cabeçalho ──────────────────────────────────────────────────────────
+  // ---- Cabeçalho ---------------------------------------------------------------
   add(`# ${projeto.titulo_relatorio || 'Projeto BI'}`, '');
   add('> Documentação gerada pelo **BI Documentation Studio**', '');
 
-  // ── Projeto ─────────────────────────────────────────────────────────────
+  // ---- Projeto -----------------------------------------------------------------
   add('## 📋 Informações do Projeto', '');
   add('| Campo | Valor |', '|-------|-------|');
   add(`| **Área / Departamento** | ${projeto.area_departamento || '—'} |`);
@@ -29,7 +29,7 @@ export function gerarMarkdown(doc: Documentacao): string {
   }
   if (projeto.observacoes_gerais) add('### Observações Gerais', '', projeto.observacoes_gerais, '');
 
-  // ── KPIs ────────────────────────────────────────────────────────────────
+  // ---- KPIs -----------------------------------------------------------------
   if (kpis.length > 0) {
     add('---', '', `## 📊 KPIs (${kpis.length})`, '');
     kpis.forEach((kpi, i) => {
@@ -48,7 +48,7 @@ export function gerarMarkdown(doc: Documentacao): string {
     });
   }
 
-  // ── Queries ─────────────────────────────────────────────────────────────
+  // ---- Queries -----------------------------------------------------------------
   if (queries.length > 0) {
     add('---', '', `## 🗄️ Queries / Tabelas (${queries.length})`, '');
     queries.forEach((q, i) => {
@@ -69,7 +69,7 @@ export function gerarMarkdown(doc: Documentacao): string {
     });
   }
 
-  // ── Relacionamentos ──────────────────────────────────────────────────────
+  // ---- Relacionamentos -----------------------------------------------------------------
   if (relacionamentos.length > 0) {
     add('---', '', `## 🔗 Relacionamentos (${relacionamentos.length})`, '');
     add('| Origem | Destino | Col. Origem | Col. Destino | Cardinalidade | Direção | Ativo |');
@@ -80,7 +80,7 @@ export function gerarMarkdown(doc: Documentacao): string {
     add('');
   }
 
-  // ── Medidas DAX ──────────────────────────────────────────────────────────
+  // ---- Medidas DAX -----------------------------------------------------------------
   if (medidas_dax.length > 0) {
     add('---', '', `## 📐 Medidas DAX (${medidas_dax.length})`, '');
     medidas_dax.forEach((m, i) => {
@@ -94,7 +94,7 @@ export function gerarMarkdown(doc: Documentacao): string {
     });
   }
 
-  // ── Páginas ──────────────────────────────────────────────────────────────
+  // ---- Páginas -----------------------------------------------------------------
   if (paginas.length > 0) {
     add('---', '', `## 📋 Páginas (${paginas.length})`, '');
     paginas.forEach((p, i) => {
@@ -123,13 +123,13 @@ export function gerarMarkdown(doc: Documentacao): string {
     });
   }
 
-  // ── Glossário ────────────────────────────────────────────────────────────
+  // ---- Glossário -----------------------------------------------------------------
   if (glossario.length > 0) {
     add('---', '', `## 📖 Glossário (${glossario.length})`, '');
     glossario.forEach((g) => add(`**${g.termo}:** ${g.definicao}`, ''));
   }
 
-  // ── Rodapé ───────────────────────────────────────────────────────────────
+  // ---- Rodapé -----------------------------------------------------------------
   add('---', '');
   add(`*Documentado por: ${metadados.documentado_por || 'BI Documentation Studio'}*`);
   add(`*Última revisão: ${new Date(metadados.ultima_revisao).toLocaleDateString('pt-BR')}*`);

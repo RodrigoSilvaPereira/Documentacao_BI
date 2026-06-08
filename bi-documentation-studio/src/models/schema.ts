@@ -3,7 +3,7 @@ import type {
   TipoFiltro, TipoVisual, TipoVisualKPI,
 } from './enums';
 
-// ── Primitivos ──────────────────────────────────────────────────────────────
+// ---- Primitivos ------------------------------------------------------------
 
 export interface Imagem {
   arquivo: string;   // ex: "pagina_1.png"
@@ -22,7 +22,7 @@ export interface ColunaPrincipal {
   descricao: string;
 }
 
-// ── Projeto ─────────────────────────────────────────────────────────────────
+// ---- Projeto -----------------------------------------------------------------
 
 export interface Projeto {
   titulo_relatorio:   string;
@@ -36,7 +36,7 @@ export interface Projeto {
   observacoes_gerais: string;
 }
 
-// ── KPI ─────────────────────────────────────────────────────────────────────
+// ---- KPI -----------------------------------------------------------------
 
 export interface KPI {
   id:            string;
@@ -49,7 +49,7 @@ export interface KPI {
   observacoes:   string;
 }
 
-// ── Query ───────────────────────────────────────────────────────────────────
+// ---- Query -----------------------------------------------------------------
 
 export interface Query {
   id:                 string;
@@ -63,7 +63,7 @@ export interface Query {
   observacoes:        string;
 }
 
-// ── Relacionamento ──────────────────────────────────────────────────────────
+// ---- Relacionamento ---------------------------------------------------------
 
 export interface Relacionamento {
   id:             string;
@@ -77,7 +77,7 @@ export interface Relacionamento {
   observacoes:    string;
 }
 
-// ── Medida DAX ──────────────────────────────────────────────────────────────
+// ---- Medida DAX -------------------------------------------------------------
 
 export interface MedidaDAX {
   id:                     string;
@@ -90,7 +90,7 @@ export interface MedidaDAX {
   comportamento_esperado: string;
 }
 
-// ── Visual ──────────────────────────────────────────────────────────────────
+// ---- Visual -----------------------------------------------------------------
 
 export interface Visual {
   id:          string;
@@ -107,7 +107,7 @@ export interface Visual {
   captura:     Imagem | null;
 }
 
-// ── Filtro ──────────────────────────────────────────────────────────────────
+// ---- Filtro -----------------------------------------------------------------
 
 export interface Filtro {
   id:               string;
@@ -119,7 +119,7 @@ export interface Filtro {
   observacoes:      string;
 }
 
-// ── Página ──────────────────────────────────────────────────────────────────
+// ---- Página -----------------------------------------------------------------
 
 export interface Pagina {
   id:       string;
@@ -131,7 +131,7 @@ export interface Pagina {
   filtros:  Filtro[];
 }
 
-// ── Glossário ───────────────────────────────────────────────────────────────
+// ---- Glossário -----------------------------------------------------------------
 
 export interface TermoGlossario {
   id:        string;
@@ -139,7 +139,7 @@ export interface TermoGlossario {
   definicao: string;
 }
 
-// ── Metadados ───────────────────────────────────────────────────────────────
+// ---- Metadados ----------------------------------------------------------------
 
 export interface Metadados {
   documentado_por: string;
@@ -147,7 +147,7 @@ export interface Metadados {
   ultima_revisao:  string;  // ISO 8601
 }
 
-// ── Documento raiz (documentacao.json) ─────────────────────────────────────
+// ---- Documento raiz (documentacao.json) ---------------------------------------
 
 export interface Documentacao {
   versao_schema:   string;
@@ -161,7 +161,7 @@ export interface Documentacao {
   metadados:       Metadados;
 }
 
-// ── Factory: documento vazio para novo projeto ──────────────────────────────
+// ---- Factory: documento vazio para novo projeto ---------------------------------
 
 export function criarDocumentacaoVazia(): Documentacao {
   const agora = new Date().toISOString();
