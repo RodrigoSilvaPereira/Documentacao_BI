@@ -69,7 +69,7 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
     >
       <div className="space-y-5 max-h-[72vh] overflow-y-auto pr-1">
 
-        {/* ── Identificação ──────────────────────── */}
+        {/* -- Identificação -- */}
         <div className="grid grid-cols-2 gap-4">
           <Input
             label="Nome da tabela / query"
@@ -105,7 +105,7 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
           rows={2}
         />
 
-        {/* ── Código SQL / M ─────────────────────── */}
+        {/* -- Código SQL / M -- */}
         <div className="flex flex-col gap-1.5">
           <div className="flex items-baseline gap-2">
             <label className="text-sm font-medium text-slate-700">Código da Query</label>
@@ -122,7 +122,7 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
           />
         </div>
 
-        {/* ── Transformações Power Query ────────── */}
+        {/* -- Transformações Power Query -- */}
         <ListaStrings
           label="Transformações aplicadas (Power Query)"
           value={form.transformacoes}
@@ -131,7 +131,7 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
           emptyText="Nenhuma transformação cadastrada."
         />
 
-        {/* ── Colunas principais ─────────────────── */}
+        {/* -- Colunas principais -- */}
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-slate-700">Colunas principais</label>
           <ColunasEditor
@@ -140,7 +140,7 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
           />
         </div>
 
-        {/* ── Observações ────────────────────────── */}
+        {/* -- Observações -- */}
         <Textarea
           label="Observações"
           placeholder="Informações complementares sobre a tabela ou processo de carga..."

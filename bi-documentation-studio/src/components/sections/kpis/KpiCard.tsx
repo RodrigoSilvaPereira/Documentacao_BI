@@ -25,7 +25,7 @@ export function KpiCard({ kpi, onEdit, onDelete }: KpiCardProps) {
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors group">
 
-      {/* ── Cabeçalho ─────────────────────────────────── */}
+      {/* -- Cabeçalho -- */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 min-w-0">
           <Badge variant={BADGE_VARIANT[kpi.tipo_visual]}>
@@ -55,7 +55,7 @@ export function KpiCard({ kpi, onEdit, onDelete }: KpiCardProps) {
         </div>
       </div>
 
-      {/* ── Corpo ─────────────────────────────────────── */}
+      {/* -- Corpo -- */}
       <div className="mt-3 space-y-1.5">
         {kpi.o_que_mede && (
           <div className="flex gap-1.5">
@@ -71,7 +71,7 @@ export function KpiCard({ kpi, onEdit, onDelete }: KpiCardProps) {
         )}
       </div>
 
-      {/* ── Rodapé com contadores ─────────────────────── */}
+      {/* -- Rodapé com contadores -- */}
       {kpi.regras_negocio.length > 0 && (
         <div className="mt-3 pt-3 border-t border-slate-100">
           <span className="text-xs text-slate-400">

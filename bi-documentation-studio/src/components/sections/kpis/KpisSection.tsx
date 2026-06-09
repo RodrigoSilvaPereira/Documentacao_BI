@@ -23,7 +23,7 @@ export function KpisSection() {
 
   const { kpis } = documento;
 
-  // ── Handlers ──────────────────────────────────────────────────
+  // -- Handlers --
 
   function abrirNovo() {
     setKpiEditando(undefined);
@@ -51,7 +51,7 @@ export function KpisSection() {
     setConfirmDeleteId(null);
   }
 
-  // ── Render ────────────────────────────────────────────────────
+  // -- Render --
 
   return (
     <div className="p-8 max-w-4xl mx-auto pb-16">

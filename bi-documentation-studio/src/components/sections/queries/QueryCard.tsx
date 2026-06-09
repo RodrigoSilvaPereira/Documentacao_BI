@@ -33,7 +33,7 @@ export function QueryCard({ query, onEdit, onDelete }: QueryCardProps) {
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors group">
 
-      {/* ── Cabeçalho ─────────────────────────────── */}
+      {/* -- Cabeçalho -- */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 min-w-0">
           <Badge variant={badgeVariant}>{labelFonte}</Badge>
@@ -57,12 +57,12 @@ export function QueryCard({ query, onEdit, onDelete }: QueryCardProps) {
         </div>
       </div>
 
-      {/* ── Descrição ─────────────────────────────── */}
+      {/* -- Descrição -- */}
       {query.descricao && (
         <p className="text-sm text-slate-600 mt-2 leading-snug">{query.descricao}</p>
       )}
 
-      {/* ── Preview do código ─────────────────────── */}
+      {/* -- Preview do código -- */}
       {codigoPreview && (
         <div className="mt-3 px-3 py-2 bg-slate-900 rounded-lg">
           <code className="text-xs font-mono text-slate-300 truncate block">
@@ -71,7 +71,7 @@ export function QueryCard({ query, onEdit, onDelete }: QueryCardProps) {
         </div>
       )}
 
-      {/* ── Contadores ────────────────────────────── */}
+      {/* -- Contadores -- */}
       {(query.colunas.length > 0 || query.transformacoes.length > 0) && (
         <div className="flex gap-3 mt-3 pt-3 border-t border-slate-100">
           {query.colunas.length > 0 && (
