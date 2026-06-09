@@ -25,7 +25,7 @@ export function Modal({ open, onOpenChange, title, description, children, maxWid
         <Dialog.Content
           className={cn(
             'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50',
-            'w-full bg-white rounded-xl shadow-xl p-6 focus:outline-none',
+            'w-full bg-white rounded-xl shadow-xl p-6 focus:outline-none focus:border-brand-500',
             MAX_W[maxWidth],
           )}
         >

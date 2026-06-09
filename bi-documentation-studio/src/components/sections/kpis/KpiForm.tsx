@@ -69,7 +69,7 @@ export function KpiForm({ aberto, kpi, onSave, onClose }: KpiFormProps) {
       open={aberto}
       onOpenChange={handleOpenChange}
       title={titulo}
-      maxWidth="lg"
+      maxWidth="xl"
     >
       <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
 

@@ -22,7 +22,7 @@ export function Input({ label, error, hint, className, id, required, ...props }:
         className={cn(
           'h-9 px-3 rounded-lg border text-sm text-slate-800 bg-white transition-colors',
           'placeholder:text-slate-400',
-          'focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent',
+          'focus:outline-none focus:border-brand-500',
           error ? 'border-red-300 bg-red-50' : 'border-slate-300 hover:border-slate-400',
           className,
         )}

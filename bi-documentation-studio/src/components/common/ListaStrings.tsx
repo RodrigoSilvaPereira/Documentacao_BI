@@ -76,7 +76,7 @@ export function ListaStrings({
           onChange={(e) => setNovoItem(e.target.value)}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className="flex-1 h-9 px-3 rounded-lg border border-slate-300 text-sm text-slate-800 bg-white placeholder:text-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-colors"
+          className="flex-1 h-9 px-3 rounded-lg border border-slate-300 text-sm text-slate-800 bg-white placeholder:text-slate-400 hover:border-slate-400 focus:outline-none focus:border-brand-500 transition-colors"
         />
         <Button
           variant="outline"

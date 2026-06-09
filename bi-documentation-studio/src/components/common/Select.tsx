@@ -27,7 +27,7 @@ export function Select({ label, error, hint, options, placeholder, className, id
           required={required}
           className={cn(
             'h-9 w-full pl-3 pr-8 rounded-lg border text-sm text-slate-800 bg-white appearance-none',
-            'focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-colors',
+            'focus:outline-none focus:border-brand-500 transition-colors',
             error ? 'border-red-300 bg-red-50' : 'border-slate-300 hover:border-slate-400',
             className,
           )}

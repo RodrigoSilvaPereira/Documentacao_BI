@@ -22,7 +22,7 @@ export function Textarea({ label, error, hint, className, id, required, ...props
         className={cn(
           'px-3 py-2 rounded-lg border text-sm text-slate-800 bg-white',
           'placeholder:text-slate-400 resize-y min-h-[80px] transition-colors',
-          'focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent',
+          'focus:outline-none focus:border-brand-500',
           error ? 'border-red-300 bg-red-50' : 'border-slate-300 hover:border-slate-400',
           className,
         )}
