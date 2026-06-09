@@ -17,7 +17,7 @@ export function RelacionamentoCard({
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors group">
 
-      {/* ── Conexão: origem → destino ─────────────── */}
+      {/* -- Conexão: origem → destino -- */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0 flex-1">
 
@@ -67,7 +67,7 @@ export function RelacionamentoCard({
         </div>
       </div>
 
-      {/* ── Badges de propriedades ────────────────── */}
+      {/* -- Badges de propriedades -- */}
       <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-slate-100">
         <Badge variant="default">
           {LABELS_CARDINALIDADE[rel.cardinalidade]}
