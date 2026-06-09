@@ -14,7 +14,12 @@ export function TopBar() {
           {projetoAberto?.nome ?? 'Sem projeto aberto'}
         </span>
         {temAlteracoes && (
-          <Circle size={7} className="text-amber-500 fill-amber-500 flex-shrink-0"/>
+          <span title="Há alterações não salvas">
+            <Circle
+              size={7}
+              className="text-amber-500 fill-amber-500 flex-shrink-0"
+            />
+          </span>
         )}
       </div>
 
