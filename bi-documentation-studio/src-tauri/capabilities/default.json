@@ -4,23 +4,29 @@
   "description": "Main capability",
   "windows": ["main"],
   "permissions": [
-    "core:path:default",
-    "core:event:default",
-    "core:window:default",
-    "core:app:default",
-    "core:resources:default",
+  "core:path:default",
+  "core:event:default",
+  "core:window:default",
+  "core:app:default",
+  "core:resources:default",
+  "core:default",
 
-    "fs:default",
-    "fs:allow-read-text-file",
-    "fs:allow-write-text-file",
-    "fs:allow-mkdir",
-    "fs:allow-read-dir",
-    "fs:allow-exists",
-    "fs:allow-copy-file",
-    "fs:allow-rename",
-    "fs:allow-remove",
+  "dialog:default",
+  "dialog:allow-message",
+  "dialog:allow-open",
+  "dialog:allow-save",
 
-    "dialog:allow-open",
-    "dialog:allow-save"
+  "fs:default",
+  "fs:read-all",
+  "fs:scope-home-recursive",
+
+  "fs:allow-read-text-file",
+  "fs:allow-write-text-file",
+  "fs:allow-mkdir",
+  "fs:allow-read-dir",
+  "fs:allow-exists",
+  "fs:allow-copy-file",
+  "fs:allow-rename",
+  "fs:allow-remove"
   ]
 }

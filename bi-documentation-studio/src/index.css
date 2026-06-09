@@ -19,26 +19,67 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-/* ── Estilos base ── */
+/* ── Estilos base ───────────────────────────────────────────── */
 @layer base {
-  /* Desabilitar seleção de texto fora de inputs (comportamento desktop) */
+  html {
+    font-size: 16px;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #f1f5f9; /* slate-100 */
+    color: #0f172a;           /* slate-900 */
+    line-height: 1.5;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  /* Comportamento desktop */
   * {
     -webkit-user-select: none;
     user-select: none;
+    box-sizing: border-box;
   }
+
   input,
   textarea,
+  select,
   [contenteditable="true"] {
     -webkit-user-select: text;
     user-select: text;
   }
 
-  /* Scrollbar customizada */
-  ::-webkit-scrollbar       { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
-    border-radius: 4px;
+  button {
+    cursor: pointer;
   }
-  ::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
+
+  img,
+  svg {
+    display: block;
+  }
+
+  /* Scrollbar customizada */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1; /* slate-300 */
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8; /* slate-400 */
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
 }
