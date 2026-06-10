@@ -52,7 +52,7 @@ export function ExportarSection() {
   }
 
   async function handleExportarMarkdown() {
-    if (!projetoAberto) return;
+    if (!projetoAberto || !documento) return;
     setExportando('md');
     setResultado(null);
     try {
@@ -69,7 +69,7 @@ export function ExportarSection() {
   }
 
   async function handleExportarJSON() {
-    if (!projetoAberto) return;
+    if (!projetoAberto || !documento) return;
     setExportando('json');
     setResultado(null);
     try {
