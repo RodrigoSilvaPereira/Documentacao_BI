@@ -3,53 +3,71 @@ import type {
   TipoFiltro, TipoVisual, TipoVisualKPI,
 } from './enums';
 
-// ---- Primitivos ------------------------------------------------------------
+// ── Primitivos ───────────────────────────────────────────────────────────────
 
 export interface Imagem {
-  arquivo: string;   // ex: "pagina_1.png"
-  caminho: string;   // ex: "imagens/paginas/pagina_1.png"
+  arquivo: string;
+  caminho: string;
 }
 
 export interface FonteDados {
-  tipo:     string;  // ex: "SQL Server"
-  descricao: string; // ex: "Base de Vendas"
+  tipo:     string;
+  descricao: string;
 }
 
 export interface ColunaPrincipal {
   id:       string;
   nome:     string;
-  tipo:     string;  // ex: "INT", "VARCHAR", "DATE"
+  tipo:     string;
   descricao: string;
 }
 
-// ---- Projeto -----------------------------------------------------------------
+// ── Projeto ──────────────────────────────────────────────────────────────────
 
 export interface Projeto {
   titulo_relatorio:   string;
   area_departamento:  string;
   responsavel:        string;
-  data_criacao:       string;  // MM/AAAA
-  ultima_atualizacao: string;  // MM/AAAA
+  data_criacao:       string;
+  ultima_atualizacao: string;
   objetivo:           string;
   descricao_geral:    string;
   fontes_dados:       FonteDados[];
   observacoes_gerais: string;
 }
 
-// ---- KPI -----------------------------------------------------------------
+// ── KPI ──────────────────────────────────────────────────────────────────────
+// Campos com ? são novos — backward compatible com JSONs antigos
 
 export interface KPI {
   id:            string;
   nome:          string;
   tipo_visual:   TipoVisualKPI;
   tipo_outro?:   string;
+
+  // O que calcula
   o_que_mede:    string;
   objetivo_meta: string;
+  formula?:      string;   // Fórmula/expressão do indicador
+
+  // Escopo do cálculo
+  o_que_entra?:      string;   // O que é incluído
+  o_que_nao_entra?:  string;   // O que é excluído
+  excecoes?:         string;   // Exceções à regra geral
+
+  // Temporalidade
+  regras_temporais?: string;   // Janela temporal, períodos especiais
+
+  // Origem e validação
+  fonte_dados_kpi?:       string;  // De onde vêm os dados
+  responsavel_validacao?: string;  // Quem valida o indicador
+
+  // Legado
   regras_negocio: string[];
-  observacoes:   string;
+  observacoes:    string;
 }
 
-// ---- Query -----------------------------------------------------------------
+// ── Query ────────────────────────────────────────────────────────────────────
 
 export interface Query {
   id:                 string;
@@ -63,7 +81,7 @@ export interface Query {
   observacoes:        string;
 }
 
-// ---- Relacionamento ---------------------------------------------------------
+// ── Relacionamento ───────────────────────────────────────────────────────────
 
 export interface Relacionamento {
   id:             string;
@@ -74,10 +92,11 @@ export interface Relacionamento {
   cardinalidade:  Cardinalidade;
   direcao:        DirecaoFiltro;
   ativo:          boolean;
+  temporario?:    boolean;  // NOVO: relacionamento via USERELATIONSHIP
   observacoes:    string;
 }
 
-// ---- Medida DAX -------------------------------------------------------------
+// ── Medida DAX ───────────────────────────────────────────────────────────────
 
 export interface MedidaDAX {
   id:                     string;
@@ -85,12 +104,13 @@ export interface MedidaDAX {
   tabela:                 string;
   descricao:              string;
   formula:                string;
-  dependencias:           string[];  // IDs de outras MedidaDAX
-  kpis_relacionados:      string[];  // IDs de KPI
+  dependencias:           string[];
+  kpis_relacionados:      string[];
   comportamento_esperado: string;
+  query_validacao?:       string;   // NOVO: Query SQL/DAX para validar
 }
 
-// ---- Visual -----------------------------------------------------------------
+// ── Visual ───────────────────────────────────────────────────────────────────
 
 export interface Visual {
   id:          string;
@@ -99,15 +119,15 @@ export interface Visual {
   tipo_outro?: string;
   objetivo:    string;
   descricao:   string;
-  kpis_ids:    string[];    // IDs de KPI
-  medidas_ids: string[];    // IDs de MedidaDAX
-  tabelas_ids: string[];    // IDs de Query
+  kpis_ids:    string[];
+  medidas_ids: string[];
+  tabelas_ids: string[];
   campos:      string[];
   observacoes: string;
   captura:     Imagem | null;
 }
 
-// ---- Filtro -----------------------------------------------------------------
+// ── Filtro ───────────────────────────────────────────────────────────────────
 
 export interface Filtro {
   id:               string;
@@ -115,23 +135,23 @@ export interface Filtro {
   tipo:             TipoFiltro;
   campo:            string;
   descricao:        string;
-  visuais_afetados: string[];  // IDs de Visual dentro da mesma Página
+  visuais_afetados: string[];
   observacoes:      string;
 }
 
-// ---- Página -----------------------------------------------------------------
+// ── Página ───────────────────────────────────────────────────────────────────
 
 export interface Pagina {
-  id:       string;
-  titulo:   string;
-  objetivo: string;
+  id:        string;
+  titulo:    string;
+  objetivo:  string;
   descricao: string;
-  captura:  Imagem | null;
-  visuais:  Visual[];
-  filtros:  Filtro[];
+  captura:   Imagem | null;
+  visuais:   Visual[];
+  filtros:   Filtro[];
 }
 
-// ---- Glossário -----------------------------------------------------------------
+// ── Glossário ────────────────────────────────────────────────────────────────
 
 export interface TermoGlossario {
   id:        string;
@@ -139,15 +159,15 @@ export interface TermoGlossario {
   definicao: string;
 }
 
-// ---- Metadados ----------------------------------------------------------------
+// ── Metadados ────────────────────────────────────────────────────────────────
 
 export interface Metadados {
   documentado_por: string;
-  criado_em:       string;  // ISO 8601
-  ultima_revisao:  string;  // ISO 8601
+  criado_em:       string;
+  ultima_revisao:  string;
 }
 
-// ---- Documento raiz (documentacao.json) ---------------------------------------
+// ── Documento raiz ───────────────────────────────────────────────────────────
 
 export interface Documentacao {
   versao_schema:   string;
@@ -161,33 +181,19 @@ export interface Documentacao {
   metadados:       Metadados;
 }
 
-// ---- Factory: documento vazio para novo projeto ---------------------------------
+// ── Factory ──────────────────────────────────────────────────────────────────
 
 export function criarDocumentacaoVazia(): Documentacao {
   const agora = new Date().toISOString();
   return {
     versao_schema: '1.0.0',
     projeto: {
-      titulo_relatorio:   '',
-      area_departamento:  '',
-      responsavel:        '',
-      data_criacao:       '',
-      ultima_atualizacao: '',
-      objetivo:           '',
-      descricao_geral:    '',
-      fontes_dados:       [],
-      observacoes_gerais: '',
+      titulo_relatorio: '', area_departamento: '', responsavel: '',
+      data_criacao: '', ultima_atualizacao: '', objetivo: '',
+      descricao_geral: '', fontes_dados: [], observacoes_gerais: '',
     },
-    kpis:            [],
-    queries:         [],
-    relacionamentos: [],
-    medidas_dax:     [],
-    paginas:         [],
-    glossario:       [],
-    metadados: {
-      documentado_por: '',
-      criado_em:       agora,
-      ultima_revisao:  agora,
-    },
+    kpis: [], queries: [], relacionamentos: [],
+    medidas_dax: [], paginas: [], glossario: [],
+    metadados: { documentado_por: '', criado_em: agora, ultima_revisao: agora },
   };
 }

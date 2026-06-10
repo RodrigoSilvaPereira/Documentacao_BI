@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Download, FileText, Archive, CheckCircle, AlertCircle } from 'lucide-react';
+import { Download, FileText, Globe, CheckCircle, AlertCircle } from 'lucide-react';
 import { useDocStore } from '@store/useDocStore';
 import { useAppStore } from '@store/useAppStore';
 import { SectionHeader } from '@components/layout/SectionHeader';
@@ -11,15 +11,14 @@ import { cn } from '@utils/cn';
 type ExportResult = { tipo: 'sucesso' | 'erro'; mensagem: string } | null;
 
 export function ExportarSection() {
-  const documento    = useDocStore((s) => s.documento);
+  const documento     = useDocStore((s) => s.documento);
   const projetoAberto = useAppStore((s) => s.projetoAberto);
 
-  const [exportando, setExportando] = useState<'md' | 'json' | null>(null);
+  const [exportando, setExportando] = useState(false);
   const [resultado,  setResultado]  = useState<ExportResult>(null);
 
   if (!documento) return null;
 
-  // ── Estatísticas do projeto ──────────────────────────────────
   const stats = useMemo(() => ({
     kpis:            documento.kpis.length,
     queries:         documento.queries.length,
@@ -42,7 +41,6 @@ export function ExportarSection() {
     { label: 'Glossário',       value: stats.glossario        },
   ];
 
-  // ── Helpers ──────────────────────────────────────────────────
   function mensagemErro(err: unknown): string {
     const msg = String(err);
     if (msg.includes('not implemented') || msg.includes('tauri') || msg.includes('invoke')) {
@@ -53,7 +51,7 @@ export function ExportarSection() {
 
   async function handleExportarMarkdown() {
     if (!projetoAberto || !documento) return;
-    setExportando('md');
+    setExportando(true);
     setResultado(null);
     try {
       await exportService.exportarMarkdown(projetoAberto.caminho, documento);
@@ -64,56 +62,37 @@ export function ExportarSection() {
     } catch (err) {
       setResultado({ tipo: 'erro', mensagem: mensagemErro(err) });
     } finally {
-      setExportando(null);
+      setExportando(false);
     }
   }
-
-  async function handleExportarJSON() {
-    if (!projetoAberto || !documento) return;
-    setExportando('json');
-    setResultado(null);
-    try {
-      await exportService.exportarJSON(projetoAberto.caminho, documento);
-      setResultado({
-        tipo: 'sucesso',
-        mensagem: 'Snapshot JSON salvo em exports/.',
-      });
-    } catch (err) {
-      setResultado({ tipo: 'erro', mensagem: mensagemErro(err) });
-    } finally {
-      setExportando(null);
-    }
-  }
-
-  const exportacaoDesabilitada = !projetoAberto || exportando !== null;
 
   return (
     <div className="p-8 max-w-3xl mx-auto pb-16">
       <SectionHeader
         icon={<Download size={20} />}
         title="Exportar"
-        description="Gere a documentação completa do projeto em diferentes formatos."
+        description="Gere a documentação completa do projeto."
       />
 
-      {/* ── Resumo do projeto ──────────────────────── */}
+      {/* Resumo */}
       <Card className="mb-6">
         <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
-          Resumo do Projeto — {documento.projeto.titulo_relatorio || 'Sem título'}
+          Resumo — {documento.projeto.titulo_relatorio || 'Projeto sem título'}
         </p>
         <div className="grid grid-cols-4 gap-2">
           {STATS_GRID.map(({ label, value }) => (
             <div key={label} className="text-center p-3 bg-slate-50 rounded-lg">
               <p className="text-xl font-bold text-slate-800 leading-none">{value}</p>
-              <p className="text-xs text-slate-500 mt-1.5 leading-none">{label}</p>
+              <p className="text-xs text-slate-500 mt-1.5">{label}</p>
             </div>
           ))}
         </div>
       </Card>
 
-      {/* ── Formatos de exportação ─────────────────── */}
+      {/* Opções de exportação */}
       <div className="grid grid-cols-2 gap-4 mb-4">
 
-        {/* Markdown */}
+        {/* Markdown — principal */}
         <div className="flex flex-col gap-4 p-5 bg-white border border-slate-200 rounded-xl hover:border-slate-300 transition-colors">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-slate-100 rounded-lg">
@@ -121,12 +100,12 @@ export function ExportarSection() {
             </div>
             <div>
               <p className="text-sm font-semibold text-slate-800">Markdown</p>
-              <p className="text-xs text-slate-400 font-mono">README.md</p>
+              <p className="text-xs text-slate-400 font-mono">README.md + snapshot</p>
             </div>
           </div>
           <p className="text-xs text-slate-500 leading-relaxed flex-1">
-            Gera o <code className="font-mono bg-slate-100 px-1 rounded">README.md</code> na
-            pasta do projeto e salva um snapshot em{' '}
+            Gera <code className="font-mono bg-slate-100 px-1 rounded">README.md</code> na
+            pasta do projeto e um snapshot histórico em{' '}
             <code className="font-mono bg-slate-100 px-1 rounded">exports/</code>.
             Compatível com GitHub, Notion e Confluence.
           </p>
@@ -134,45 +113,36 @@ export function ExportarSection() {
             variant="primary"
             size="md"
             fullWidth
-            loading={exportando === 'md'}
-            disabled={exportacaoDesabilitada}
+            loading={exportando}
+            disabled={!projetoAberto || exportando}
             onClick={handleExportarMarkdown}
           >
             Exportar Markdown
           </Button>
         </div>
 
-        {/* JSON */}
-        <div className="flex flex-col gap-4 p-5 bg-white border border-slate-200 rounded-xl hover:border-slate-300 transition-colors">
+        {/* HTML — implementação futura */}
+        <div className="flex flex-col gap-4 p-5 bg-slate-50 border border-slate-200 rounded-xl opacity-60">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-slate-100 rounded-lg">
-              <Archive size={18} className="text-slate-600" />
+            <div className="p-2.5 bg-slate-200 rounded-lg">
+              <Globe size={18} className="text-slate-400" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-800">JSON</p>
-              <p className="text-xs text-slate-400 font-mono">Backup completo</p>
+              <p className="text-sm font-semibold text-slate-500">HTML</p>
+              <p className="text-xs text-slate-400">Documento interativo</p>
             </div>
           </div>
-          <p className="text-xs text-slate-500 leading-relaxed flex-1">
-            Salva um snapshot do{' '}
-            <code className="font-mono bg-slate-100 px-1 rounded">documentacao.json</code> em{' '}
-            <code className="font-mono bg-slate-100 px-1 rounded">exports/</code>.
-            Ideal para controle de versões e backup.
+          <p className="text-xs text-slate-400 leading-relaxed flex-1">
+            Documento HTML com navegação, imagens e formatação visual aprimorada.
+            Ideal para compartilhar como página web estática.
           </p>
-          <Button
-            variant="secondary"
-            size="md"
-            fullWidth
-            loading={exportando === 'json'}
-            disabled={exportacaoDesabilitada}
-            onClick={handleExportarJSON}
-          >
-            Exportar JSON
+          <Button variant="secondary" size="md" fullWidth disabled>
+            Em breve
           </Button>
         </div>
       </div>
 
-      {/* ── Feedback do resultado ──────────────────── */}
+      {/* Feedback */}
       {resultado && (
         <div className={cn(
           'flex items-start gap-3 p-4 rounded-xl border text-sm',
@@ -188,7 +158,6 @@ export function ExportarSection() {
         </div>
       )}
 
-      {/* Aviso se não houver projeto aberto */}
       {!projetoAberto && (
         <p className="text-xs text-slate-400 text-center mt-4">
           Abra um projeto para habilitar a exportação.

@@ -23,7 +23,16 @@
         "decorations": true
       }
     ],
-    "security": { "capabilities": ["default"] }
+    "security": {
+      "capabilities": ["default"],
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "$HOME/**",
+          "C:/Users/**"
+        ]
+      }
+    }
   },
   "bundle": {
     "active": true,

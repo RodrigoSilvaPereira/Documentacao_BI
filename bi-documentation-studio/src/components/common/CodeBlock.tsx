@@ -28,7 +28,7 @@ export function CodeBlock({ code, language, label, minHeight = '100px', classNam
         </div>
       )}
       <div className="relative group rounded-lg overflow-hidden border border-slate-200">
-        <pre className="bg-slate-900 text-slate-100 text-xs font-mono p-4 overflow-auto" style={{ minHeight }}>
+        <pre className="bg-slate-900 text-slate-100 text-xs font-mono p-4 overflow-auto whitespace-pre-wrap break-words" style={{ minHeight }}>
           <code>{code || '-- vazio --'}</code>
         </pre>
         {code && (

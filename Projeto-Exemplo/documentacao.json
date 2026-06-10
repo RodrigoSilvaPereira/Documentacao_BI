@@ -1,7 +1,7 @@
 {
   "versao_schema": "1.0.0",
   "projeto": {
-    "titulo_relatorio": "Título_2",
+    "titulo_relatorio": "Título_Projeto",
     "area_departamento": "Comercial",
     "responsavel": "Rodrigo",
     "data_criacao": "06/2026",
@@ -85,50 +85,16 @@
   ],
   "paginas": [
     {
-      "id": "pag_001",
-      "titulo": "Visão Geral",
-      "objetivo": "Apresentar os principais indicadores",
-      "descricao": "Página inicial do relatório",
+      "id": "c3764e13-5e01-4cc1-8f69-8c54da6fd5ee",
+      "titulo": "asdd",
+      "objetivo": "",
+      "descricao": "",
       "captura": {
-        "arquivo": "pagina_geral.png",
-        "caminho": "imagens/pagina_geral.png"
+        "arquivo": "pagina_c3764e13-5e01-4cc1-8f69-8c54da6fd5ee.png",
+        "caminho": "imagens/paginas/pagina_c3764e13-5e01-4cc1-8f69-8c54da6fd5ee.png"
       },
-      "visuais": [
-        {
-          "id": "vis_001",
-          "nome": "Card Faturamento",
-          "tipo": "card",
-          "objetivo": "Mostrar faturamento total",
-          "descricao": "Indicador principal",
-          "kpis_ids": [
-            "kpi_001"
-          ],
-          "medidas_ids": [
-            "mdx_001"
-          ],
-          "tabelas_ids": [
-            "qry_001"
-          ],
-          "campos": [
-            "ValorVenda"
-          ],
-          "observacoes": "",
-          "captura": null
-        }
-      ],
-      "filtros": [
-        {
-          "id": "flt_001",
-          "nome": "Período",
-          "tipo": "segmentacao",
-          "campo": "DataVenda",
-          "descricao": "Filtro de período",
-          "visuais_afetados": [
-            "vis_001"
-          ],
-          "observacoes": ""
-        }
-      ]
+      "visuais": [],
+      "filtros": []
     }
   ],
   "glossario": [
@@ -141,6 +107,6 @@
   "metadados": {
     "documentado_por": "Rodrigo",
     "criado_em": "2026-06-08T00:00:00.000Z",
-    "ultima_revisao": "2026-06-09T22:41:35.011Z"
+    "ultima_revisao": "2026-06-10T23:05:24.644Z"
   }
 }
