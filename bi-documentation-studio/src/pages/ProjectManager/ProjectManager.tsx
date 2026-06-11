@@ -1,15 +1,19 @@
-import { LayoutDashboard, Plus, FolderOpen, Clock, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Plus, FolderOpen, Clock, ChevronRight, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { open } from '@tauri-apps/plugin-dialog';
 import { useAppStore } from '@store/useAppStore';
 import { useDocStore } from '@store/useDocStore';
 import { projectService } from '@services/projectService';
-import { formatarDataHora } from '@utils/date';
 import type { ProjetoRecente } from '@models/app';
 
 export function ProjectManager() {
   const navigate = useNavigate();
-  const { projetosRecentes, abrirProjeto, adicionarProjetoRecente } = useAppStore();
+  const {
+    projetosRecentes,
+    abrirProjeto,
+    adicionarProjetoRecente,
+    removerProjetoRecente,
+  } = useAppStore();
   const { setDocumento } = useDocStore();
 
   async function handleNovoProjeto() {
@@ -48,6 +52,7 @@ export function ProjectManager() {
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-8">
+
       {/* Branding */}
       <div className="mb-10 text-center">
         <div className="w-16 h-16 bg-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-brand-900/30">
@@ -57,7 +62,7 @@ export function ProjectManager() {
         <p className="text-slate-400 text-sm mt-1">Documentação técnica para projetos Power BI</p>
       </div>
 
-      {/* Ações principais */}
+      {/* Ações */}
       <div className="flex gap-3 mb-10">
         <button onClick={handleNovoProjeto}
           className="flex items-center gap-2 px-5 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition-colors text-sm shadow-lg shadow-brand-900/30">
@@ -77,7 +82,12 @@ export function ProjectManager() {
           </h2>
           <div className="space-y-1.5">
             {projetosRecentes.map((p) => (
-              <RecentItem key={p.caminho} projeto={p} onClick={() => carregarProjeto(p.caminho, p.nome)} />
+              <RecentItem
+                key={p.caminho}
+                projeto={p}
+                onClick={() => carregarProjeto(p.caminho, p.nome)}
+                onRemove={() => removerProjetoRecente(p.caminho)}
+              />
             ))}
           </div>
         </div>
@@ -92,23 +102,43 @@ export function ProjectManager() {
   );
 }
 
-function RecentItem({ projeto, onClick }: { projeto: ProjetoRecente; onClick: () => void }) {
-  return (
-    <button onClick={onClick}
-      className="w-full flex items-center gap-3 p-3 bg-slate-800/60 hover:bg-slate-800 rounded-xl border border-slate-700/50 transition-colors group">
-      <FolderOpen size={15} className="text-brand-400 flex-shrink-0" />
-      <div className="flex-1 text-left min-w-0">
-        <p className="text-sm font-medium text-slate-100 truncate">{projeto.nome}</p>
-        <p className="text-xs text-slate-500 truncate">{projeto.caminho}</p>
-      </div>
-      <div className="text-right flex-shrink-0">
-        <p className="text-xs text-slate-600">{formatarData(projeto.ultimoAcesso)}</p>
-        <ChevronRight size={13} className="text-slate-600 group-hover:text-slate-400 transition-colors ml-auto mt-0.5" />
-      </div>
-    </button>
-  );
-}
-
 function formatarData(iso: string): string {
   try { return new Date(iso).toLocaleDateString('pt-BR'); } catch { return ''; }
+}
+
+interface RecentItemProps {
+  projeto:  ProjetoRecente;
+  onClick:  () => void;
+  onRemove: () => void;
+}
+
+function RecentItem({ projeto, onClick, onRemove }: RecentItemProps) {
+  return (
+    <div className="flex items-center gap-2 group">
+      {/* Área clicável para abrir */}
+      <button
+        onClick={onClick}
+        className="flex items-center gap-3 flex-1 p-3 bg-slate-800/60 hover:bg-slate-800 rounded-xl border border-slate-700/50 transition-colors text-left min-w-0"
+      >
+        <FolderOpen size={15} className="text-brand-400 flex-shrink-0" />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-slate-100 truncate">{projeto.nome}</p>
+          <p className="text-xs text-slate-500 truncate">{projeto.caminho}</p>
+        </div>
+        <div className="flex-shrink-0 text-right">
+          <p className="text-xs text-slate-600">{formatarData(projeto.ultimoAcesso)}</p>
+          <ChevronRight size={13} className="text-slate-600 group-hover:text-slate-400 transition-colors ml-auto mt-0.5" />
+        </div>
+      </button>
+
+      {/* Botão remover — visível no hover */}
+      <button
+        onClick={(e) => { e.stopPropagation(); onRemove(); }}
+        title="Remover dos recentes"
+        className="flex-shrink-0 p-2 text-slate-600 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+      >
+        <X size={14} />
+      </button>
+    </div>
+  );
 }

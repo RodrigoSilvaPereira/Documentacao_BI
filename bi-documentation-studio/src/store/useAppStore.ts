@@ -9,10 +9,11 @@ interface AppStore {
   secaoAtiva:       SecaoAtiva;
   projetosRecentes: ProjetoRecente[];
 
-  abrirProjeto:           (projeto: ProjetoAberto) => void;
-  fecharProjeto:          () => void;
-  setSecaoAtiva:          (secao: SecaoAtiva) => void;
+  abrirProjeto:            (projeto: ProjetoAberto) => void;
+  fecharProjeto:           () => void;
+  setSecaoAtiva:           (secao: SecaoAtiva) => void;
   adicionarProjetoRecente: (projeto: ProjetoRecente) => void;
+  removerProjetoRecente:   (caminho: string) => void;   // ← novo
 }
 
 export const useAppStore = create<AppStore>()(
@@ -38,10 +39,14 @@ export const useAppStore = create<AppStore>()(
             ...state.projetosRecentes.filter((p) => p.caminho !== projeto.caminho),
           ].slice(0, MAX_RECENTES),
         })),
+
+      removerProjetoRecente: (caminho) =>
+        set((state) => ({
+          projetosRecentes: state.projetosRecentes.filter((p) => p.caminho !== caminho),
+        })),
     }),
     {
       name: 'bi-doc-studio-app',
-      // projetoAberto NÃO é persistido — usuário reabre explicitamente
       partialize: (state) => ({
         secaoAtiva:       state.secaoAtiva,
         projetosRecentes: state.projetosRecentes,
