@@ -67,7 +67,7 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
       title={query ? 'Editar Query' : 'Nova Query'}
       maxWidth="3xl"
     >
-      <div className="space-y-5 max-h-[72vh] overflow-y-auto pr-1">
+      <div className="space-y-5 max-h-[72vh] overflow-y-auto pr-1 pb-8">
 
         {/* -- Identificação -- */}
         <div className="grid grid-cols-2 gap-4">
