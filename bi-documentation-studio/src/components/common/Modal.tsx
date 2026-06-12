@@ -3,9 +3,9 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { cn } from '@utils/cn';
 
-type MaxWidth = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
+type MaxWidth = 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 const MAX_W: Record<MaxWidth, string> = {
-  sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-xl', '2xl': 'max-w-2xl', '3xl': 'max-w-3xl',
+  sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-xl', '2xl': 'max-w-2xl',
 };
 
 interface ModalProps {
@@ -23,9 +23,13 @@ export function Modal({ open, onOpenChange, title, description, children, maxWid
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/40 z-40" />
         <Dialog.Content
+          // Impede que cliques fora ou foco perdido fechem o modal sem salvar.
+          // Fechar continua possível pelo botão X ou pelos botões do formulário.
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onInteractOutside={(e) => e.preventDefault()}
           className={cn(
             'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50',
-            'w-full bg-white rounded-xl shadow-xl p-6 focus:outline-none focus:border-brand-500',
+            'w-full bg-white rounded-xl shadow-xl p-6 focus:outline-none',
             MAX_W[maxWidth],
           )}
         >

@@ -17,9 +17,13 @@ export function formatarDataHora(isoString: string): string {
   }
 }
 
-/** Gera sufixo de snapshot: "05-06" */
+/**
+ * Sufixo para pastas/arquivos de snapshot, incluindo data e hora
+ * para permitir múltiplas exportações no mesmo dia.
+ * Ex: "12-06-2026_14-35"
+ */
 export function gerarSufixoSnapshot(): string {
-  return format(new Date(), 'dd-MM');
+  return format(new Date(), 'dd-MM-yyyy_HH-mm');
 }
 
 export function agora(): string {

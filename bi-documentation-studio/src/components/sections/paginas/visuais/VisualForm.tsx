@@ -13,29 +13,29 @@ import { OPCOES_TIPO_VISUAL, type TipoVisual } from '@models/enums';
 import type { Visual, KPI, MedidaDAX, Query } from '@models/schema';
 
 interface VisualFormProps {
-  visual?:  Visual;
-  kpis:     KPI[];
-  medidas:  MedidaDAX[];
-  queries:  Query[];
-  onSave:   (visual: Visual) => void;
-  onCancel: () => void;
+  visual?:      Visual;
+  kpis:         KPI[];
+  medidas:      MedidaDAX[];
+  queries:      Query[];
+  paginaTitulo: string;  // usado na nomenclatura da imagem do visual
+  onSave:       (visual: Visual) => void;
+  onCancel:     () => void;
 }
 
 function visualVazio(): Visual {
   return {
-    id: generateId(), nome: '', tipo: 'cartao', tipo_outro: '',
+    id: generateId(), nome: '', tipo: 'card', tipo_outro: '',
     objetivo: '', descricao: '', kpis_ids: [], medidas_ids: [],
     tabelas_ids: [], campos: [], observacoes: '', captura: null,
   };
 }
 
-export function VisualForm({ visual, kpis, medidas, queries, onSave, onCancel }: VisualFormProps) {
+export function VisualForm({ visual, kpis, medidas, queries, paginaTitulo, onSave, onCancel }: VisualFormProps) {
   const projetoAberto = useAppStore((s) => s.projetoAberto);
   const [form, setForm] = useState<Visual>(() => visual ?? visualVazio());
   const [previewCaptura, setPreviewCaptura] = useState<string | null>(null);
   const [carregandoImg, setCarregandoImg] = useState(false);
 
-  // Resolve preview existente
   useEffect(() => {
     if (!visual?.captura || !projetoAberto) { setPreviewCaptura(null); return; }
     imageService.resolverUrl(visual.captura, projetoAberto.caminho).then(setPreviewCaptura);
@@ -56,8 +56,11 @@ export function VisualForm({ visual, kpis, medidas, queries, onSave, onCancel }:
     try {
       const path = await imageService.selecionarImagem();
       if (!path) return;
-      const imagem = await imageService.importarVisual(path, projetoAberto.caminho, form.id);
+
+      const nomeAtual = form.nome.trim() || 'visual';
+      const imagem = await imageService.importarVisual(path, projetoAberto.caminho, paginaTitulo, nomeAtual, form.captura);
       const url    = await imageService.resolverUrl(imagem, projetoAberto.caminho);
+
       setForm((prev) => ({ ...prev, captura: imagem }));
       setPreviewCaptura(url);
     } catch (err) {
@@ -124,7 +127,7 @@ export function VisualForm({ visual, kpis, medidas, queries, onSave, onCancel }:
         <label className="text-sm font-medium text-slate-700">Captura do visual</label>
         {previewCaptura ? (
           <div className="relative rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
-            <img src={previewCaptura} alt="Captura do visual" className="w-full h-64 object-cover" />
+            <img src={previewCaptura} alt="Captura do visual" className="w-full h-36 object-cover" />
             <button onClick={handleRemoverCaptura}
               className="absolute top-2 right-2 p-1 bg-white rounded-full shadow text-slate-600 hover:text-red-600 transition-colors">
               <X size={13} />

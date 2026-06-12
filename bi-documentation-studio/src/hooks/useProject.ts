@@ -6,14 +6,24 @@ import { projectService } from '@services/projectService';
 
 export function useProject() {
   const navigate = useNavigate();
-  const { projetoAberto, fecharProjeto } = useAppStore();
+  const { projetoAberto, fecharProjeto, adicionarProjetoRecente } = useAppStore();
   const { documento, temAlteracoes, resetDocumento, resetAlteracoes } = useDocStore();
 
   const salvar = useCallback(async () => {
     if (!projetoAberto || !documento) return;
     await projectService.salvarProjeto(projetoAberto.caminho, documento);
+
+    // Atualiza imediatamente o nome exibido em Projetos Recentes,
+    // refletindo qualquer alteração no título do relatório.
+    const nome = documento.projeto.titulo_relatorio.trim() || projetoAberto.nome;
+    adicionarProjetoRecente({
+      caminho: projetoAberto.caminho,
+      nome,
+      ultimoAcesso: new Date().toISOString(),
+    });
+
     resetAlteracoes();
-  }, [projetoAberto, documento, resetAlteracoes]);
+  }, [projetoAberto, documento, adicionarProjetoRecente, resetAlteracoes]);
 
   const fechar = useCallback(() => {
     resetDocumento();

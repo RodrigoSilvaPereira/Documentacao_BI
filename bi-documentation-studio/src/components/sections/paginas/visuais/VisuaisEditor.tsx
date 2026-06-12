@@ -5,17 +5,22 @@ import { EmptyState } from '@components/common/EmptyState';
 import { ConfirmDialog } from '@components/common/ConfirmDialog';
 import { VisualCard } from './VisualCard';
 import { VisualForm } from './VisualForm';
+import { imageService } from '@services/imageService';
+import { useAppStore } from '@store/useAppStore';
 import type { Visual, KPI, MedidaDAX, Query } from '@models/schema';
 
 interface VisuaisEditorProps {
-  visuais:  Visual[];
-  onChange: (visuais: Visual[]) => void;
-  kpis:     KPI[];
-  medidas:  MedidaDAX[];
-  queries:  Query[];
+  visuais:      Visual[];
+  onChange:     (visuais: Visual[]) => void;
+  kpis:         KPI[];
+  medidas:      MedidaDAX[];
+  queries:      Query[];
+  paginaTitulo: string;  // usado para nomenclatura das imagens dos visuais
 }
 
-export function VisuaisEditor({ visuais, onChange, kpis, medidas, queries }: VisuaisEditorProps) {
+export function VisuaisEditor({ visuais, onChange, kpis, medidas, queries, paginaTitulo }: VisuaisEditorProps) {
+  const projetoAberto = useAppStore((s) => s.projetoAberto);
+
   const [formAberto,      setFormAberto]      = useState(false);
   const [visualEditando,  setVisualEditando]  = useState<Visual | undefined>(undefined);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -30,11 +35,20 @@ export function VisuaisEditor({ visuais, onChange, kpis, medidas, queries }: Vis
     setFormAberto(true);
   }
 
-  function handleSalvar(visual: Visual) {
+  async function handleSalvar(visualNovo: Visual) {
+    let v = visualNovo;
+
+    // Se o nome do visual mudou e existe imagem vinculada,
+    // renomeia o arquivo para manter a nomenclatura consistente.
+    if (visualEditando && visualEditando.nome !== v.nome && v.captura && projetoAberto) {
+      const nova = await imageService.renomearImagemVisual(projetoAberto.caminho, v.captura, paginaTitulo, v.nome);
+      if (nova) v = { ...v, captura: nova };
+    }
+
     if (visualEditando) {
-      onChange(visuais.map((v) => (v.id === visualEditando.id ? visual : v)));
+      onChange(visuais.map((x) => (x.id === visualEditando.id ? v : x)));
     } else {
-      onChange([...visuais, visual]);
+      onChange([...visuais, v]);
     }
     setFormAberto(false);
     setVisualEditando(undefined);
@@ -53,24 +67,17 @@ export function VisuaisEditor({ visuais, onChange, kpis, medidas, queries }: Vis
 
   return (
     <div className="space-y-2">
-      {/* Cabeçalho */}
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-slate-700">
           Visuais{visuais.length > 0 && ` (${visuais.length})`}
         </span>
         {!formAberto && (
-          <Button
-            variant="outline"
-            size="sm"
-            leftIcon={<Plus size={12} />}
-            onClick={abrirNovo}
-          >
+          <Button variant="outline" size="sm" leftIcon={<Plus size={12} />} onClick={abrirNovo}>
             Adicionar visual
           </Button>
         )}
       </div>
 
-      {/* Lista de visuais */}
       {visuais.length > 0 && (
         <div className="space-y-1.5">
           {visuais.map((visual) => (
@@ -86,14 +93,9 @@ export function VisuaisEditor({ visuais, onChange, kpis, medidas, queries }: Vis
       )}
 
       {visuais.length === 0 && !formAberto && (
-        <EmptyState
-          title="Nenhum visual cadastrado"
-          description="Adicione os visuais desta página."
-          className="py-6"
-        />
+        <EmptyState title="Nenhum visual cadastrado" description="Adicione os visuais desta página." className="py-6" />
       )}
 
-      {/* Formulário inline */}
       {formAberto && (
         <VisualForm
           key={visualEditando?.id ?? 'novo'}
@@ -101,6 +103,7 @@ export function VisuaisEditor({ visuais, onChange, kpis, medidas, queries }: Vis
           kpis={kpis}
           medidas={medidas}
           queries={queries}
+          paginaTitulo={paginaTitulo}
           onSave={handleSalvar}
           onCancel={handleCancelar}
         />

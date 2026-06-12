@@ -40,6 +40,7 @@ export function PaginaForm({ aberto, pagina, kpis, medidas, queries, onSave, onC
   const [form, setForm] = useState<Pagina>(() => pagina ?? paginaVazia());
   const [previewCaptura, setPreviewCaptura] = useState<string | null>(null);
   const [carregandoImg, setCarregandoImg] = useState(false);
+  const [salvando, setSalvando] = useState(false);
 
   function handleOpenChange(open: boolean) {
     if (open) {
@@ -50,7 +51,6 @@ export function PaginaForm({ aberto, pagina, kpis, medidas, queries, onSave, onC
     }
   }
 
-  // Resolve preview da imagem existente ao abrir em modo edição
   useEffect(() => {
     if (!aberto || !pagina?.captura || !projetoAberto) { setPreviewCaptura(null); return; }
     imageService.resolverUrl(pagina.captura, projetoAberto.caminho).then(setPreviewCaptura);
@@ -66,8 +66,11 @@ export function PaginaForm({ aberto, pagina, kpis, medidas, queries, onSave, onC
     try {
       const path = await imageService.selecionarImagem();
       if (!path) return;
-      const imagem = await imageService.importarPagina(path, projetoAberto.caminho, form.id);
+
+      const tituloAtual = form.titulo.trim() || 'pagina';
+      const imagem = await imageService.importarPagina(path, projetoAberto.caminho, tituloAtual, form.captura);
       const url    = await imageService.resolverUrl(imagem, projetoAberto.caminho);
+
       setForm((prev) => ({ ...prev, captura: imagem }));
       setPreviewCaptura(url);
     } catch (err) {
@@ -82,17 +85,43 @@ export function PaginaForm({ aberto, pagina, kpis, medidas, queries, onSave, onC
     setPreviewCaptura(null);
   }
 
-  function handleSalvar() {
-    if (!form.titulo.trim()) return;
-    onSave({ ...form, titulo: form.titulo.trim() });
-    onClose();
+  async function handleSalvar() {
+    const titulo = form.titulo.trim();
+    if (!titulo) return;
+
+    setSalvando(true);
+    try {
+      let novaForm: Pagina = { ...form, titulo };
+
+      // Se o título da página mudou e existem imagens vinculadas,
+      // renomeia os arquivos (página e visuais) para refletir o novo nome.
+      if (projetoAberto && pagina && pagina.titulo !== titulo) {
+
+        if (novaForm.captura) {
+          const novaCaptura = await imageService.renomearImagemPagina(projetoAberto.caminho, novaForm.captura, titulo);
+          if (novaCaptura) novaForm.captura = novaCaptura;
+        }
+
+        novaForm.visuais = await Promise.all(
+          novaForm.visuais.map(async (v) => {
+            if (!v.captura) return v;
+            const nova = await imageService.renomearImagemVisual(projetoAberto.caminho, v.captura, titulo, v.nome);
+            return nova ? { ...v, captura: nova } : v;
+          }),
+        );
+      }
+
+      onSave(novaForm);
+      onClose();
+    } finally {
+      setSalvando(false);
+    }
   }
 
   return (
     <Modal open={aberto} onOpenChange={handleOpenChange} title={pagina ? 'Editar Página' : 'Nova Página'} maxWidth="2xl">
       <div className="space-y-5 max-h-[78vh] overflow-y-auto pr-1">
 
-        {/* Informações básicas */}
         <Input label="Nome da página" placeholder="Ex: Resumo Executivo" value={form.titulo}
           onChange={(e) => set('titulo', e.target.value)} required />
         <Textarea label="Objetivo" placeholder="Ex: Apresentar os principais indicadores para a diretoria."
@@ -105,7 +134,7 @@ export function PaginaForm({ aberto, pagina, kpis, medidas, queries, onSave, onC
           <label className="text-sm font-medium text-slate-700">Captura da página</label>
           {previewCaptura ? (
             <div className="relative rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
-              <img src={previewCaptura} alt="Captura da página" className="w-full h-70 object-cover" />
+              <img src={previewCaptura} alt="Captura da página" className="w-full h-48 object-cover" />
               <button onClick={handleRemoverCaptura}
                 className="absolute top-2 right-2 p-1 bg-white rounded-full shadow text-slate-600 hover:text-red-600 transition-colors">
                 <X size={14} />
@@ -125,18 +154,23 @@ export function PaginaForm({ aberto, pagina, kpis, medidas, queries, onSave, onC
           )}
         </div>
 
-        {/* Visuais */}
         <Separador label="Visuais da página" />
-        <VisuaisEditor visuais={form.visuais} onChange={(v) => set('visuais', v)} kpis={kpis} medidas={medidas} queries={queries} />
+        <VisuaisEditor
+          visuais={form.visuais}
+          onChange={(v) => set('visuais', v)}
+          kpis={kpis}
+          medidas={medidas}
+          queries={queries}
+          paginaTitulo={form.titulo}
+        />
 
-        {/* Filtros */}
         <Separador label="Filtros da página" />
         <FiltrosEditor filtros={form.filtros} onChange={(f) => set('filtros', f)} visuais={form.visuais} />
       </div>
 
       <div className="flex justify-end gap-2 mt-5 pt-4 border-t border-slate-100">
         <Button variant="ghost" size="md" onClick={onClose}>Cancelar</Button>
-        <Button variant="primary" size="md" onClick={handleSalvar} disabled={!form.titulo.trim()}>
+        <Button variant="primary" size="md" onClick={handleSalvar} disabled={!form.titulo.trim()} loading={salvando}>
           {pagina ? 'Salvar alterações' : 'Adicionar Página'}
         </Button>
       </div>
