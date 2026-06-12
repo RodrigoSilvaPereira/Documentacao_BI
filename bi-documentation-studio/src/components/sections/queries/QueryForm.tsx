@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal } from '@components/common/Modal';
 import { Input } from '@components/common/Input';
 import { Textarea } from '@components/common/Textarea';
@@ -19,24 +19,20 @@ interface QueryFormProps {
 
 function queryVazia(): Query {
   return {
-    id:                generateId(),
-    nome:              '',
-    fonte_dados:       'sql_server',
-    fonte_dados_outro: '',
-    descricao:         '',
-    codigo:            '',
-    transformacoes:    [],
-    colunas:           [],
-    observacoes:       '',
+    id: generateId(), nome: '', fonte_dados: 'sql_server', fonte_dados_outro: '',
+    descricao: '', codigo: '', transformacoes: [], colunas: [], observacoes: '',
   };
 }
 
 export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
   const [form, setForm] = useState<Query>(() => query ?? queryVazia());
 
+  useEffect(() => {
+    if (aberto) setForm(query ?? queryVazia());
+  }, [aberto, query]);
+
   function handleOpenChange(open: boolean) {
-    if (open) setForm(query ?? queryVazia());
-    else onClose();
+    if (!open) onClose();
   }
 
   function set<K extends keyof Query>(campo: K, valor: Query[K]) {
@@ -58,18 +54,15 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
     onClose();
   }
 
-  const formValido = form.nome.trim() !== '';
-
   return (
     <Modal
       open={aberto}
       onOpenChange={handleOpenChange}
       title={query ? 'Editar Query' : 'Nova Query'}
-      maxWidth="3xl"
+      maxWidth="xl"
     >
-      <div className="space-y-5 max-h-[72vh] overflow-y-auto pr-1 pb-8">
+      <div className="space-y-5 max-h-[72vh] overflow-y-auto pr-1">
 
-        {/* -- Identificação -- */}
         <div className="grid grid-cols-2 gap-4">
           <Input
             label="Nome da tabela / query"
@@ -86,7 +79,6 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
           />
         </div>
 
-        {/* Fonte personalizada */}
         {form.fonte_dados === 'outro' && (
           <Input
             label="Fonte personalizada"
@@ -96,7 +88,6 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
           />
         )}
 
-        {/* Descrição */}
         <Textarea
           label="Descrição da tabela"
           placeholder="Ex: Fato de vendas com granularidade por pedido"
@@ -105,7 +96,6 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
           rows={2}
         />
 
-        {/* -- Código SQL / M -- */}
         <div className="flex flex-col gap-1.5">
           <div className="flex items-baseline gap-2">
             <label className="text-sm font-medium text-slate-700">Código da Query</label>
@@ -117,12 +107,11 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
             placeholder={`SELECT\n    id_pedido,\n    data_pedido,\n    valor_liquido\nFROM dbo.fVendas\nWHERE status = 'Aprovado'`}
             rows={7}
             spellCheck={false}
-            className="px-3 py-2.5 rounded-lg border border-slate-700 text-sm text-slate-100 bg-slate-900 font-mono placeholder:text-slate-600 focus:outline-none focus:border-brand-500 resize-y transition-colors leading-relaxed"
-            style={{ minHeight: '140px' }}
+            className="px-3 py-2.5 rounded-lg border border-slate-700 text-sm text-slate-100 bg-slate-900 font-mono placeholder:text-slate-600 outline-none focus:outline-none focus:border-brand-500 resize-y transition-colors leading-relaxed"
+            style={{ minHeight: '140px' }}focus:
           />
         </div>
 
-        {/* -- Transformações Power Query -- */}
         <ListaStrings
           label="Transformações aplicadas (Power Query)"
           value={form.transformacoes}
@@ -131,16 +120,11 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
           emptyText="Nenhuma transformação cadastrada."
         />
 
-        {/* -- Colunas principais -- */}
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-slate-700">Colunas principais</label>
-          <ColunasEditor
-            value={form.colunas}
-            onChange={(cols) => set('colunas', cols)}
-          />
+          <ColunasEditor value={form.colunas} onChange={(cols) => set('colunas', cols)} />
         </div>
 
-        {/* -- Observações -- */}
         <Textarea
           label="Observações"
           placeholder="Informações complementares sobre a tabela ou processo de carga..."
@@ -150,10 +134,9 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
         />
       </div>
 
-      {/* Rodapé */}
       <div className="flex justify-end gap-2 mt-5 pt-4 border-t border-slate-100">
         <Button variant="ghost" size="md" onClick={onClose}>Cancelar</Button>
-        <Button variant="primary" size="md" onClick={handleSalvar} disabled={!formValido}>
+        <Button variant="primary" size="md" onClick={handleSalvar} disabled={!form.nome.trim()}>
           {query ? 'Salvar alterações' : 'Adicionar Query'}
         </Button>
       </div>

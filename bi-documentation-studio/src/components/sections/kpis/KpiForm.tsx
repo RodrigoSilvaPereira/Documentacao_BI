@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal } from '@components/common/Modal';
 import { Input } from '@components/common/Input';
 import { Textarea } from '@components/common/Textarea';
@@ -27,7 +27,6 @@ function kpiVazio(): KPI {
   };
 }
 
-// Rótulo de seção dentro do modal
 function Secao({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-3 pt-1">
@@ -43,9 +42,15 @@ function Secao({ label }: { label: string }) {
 export function KpiForm({ aberto, kpi, onSave, onClose }: KpiFormProps) {
   const [form, setForm] = useState<KPI>(() => kpi ?? kpiVazio());
 
+  // Reidrata o formulário sempre que o modal é aberto.
+  // Necessário porque o Radix Dialog não chama onOpenChange(true)
+  // quando o `open` é alterado programaticamente pelo componente pai.
+  useEffect(() => {
+    if (aberto) setForm(kpi ?? kpiVazio());
+  }, [aberto, kpi]);
+
   function handleOpenChange(open: boolean) {
-    if (open) setForm(kpi ?? kpiVazio());
-    else onClose();
+    if (!open) onClose();
   }
 
   function set<K extends keyof KPI>(campo: K, valor: KPI[K]) {
@@ -74,9 +79,8 @@ export function KpiForm({ aberto, kpi, onSave, onClose }: KpiFormProps) {
       title={kpi ? 'Editar KPI' : 'Novo KPI'}
       maxWidth="xl"
     >
-      <div className="space-y-4 max-h-[78vh] overflow-y-auto pr-1 pb-3">
+      <div className="space-y-4 max-h-[78vh] overflow-y-auto pr-1">
 
-        {/* ── Identificação ────────────────────────── */}
         <div className="grid grid-cols-2 gap-4">
           <Input
             label="Nome do KPI"
@@ -102,7 +106,6 @@ export function KpiForm({ aberto, kpi, onSave, onClose }: KpiFormProps) {
           />
         )}
 
-        {/* ── O que calcula ────────────────────────── */}
         <Secao label="O que calcula" />
 
         <Textarea
@@ -128,7 +131,6 @@ export function KpiForm({ aberto, kpi, onSave, onClose }: KpiFormProps) {
           hint="Expressão do cálculo em linguagem natural ou notação matemática."
         />
 
-        {/* ── Escopo ───────────────────────────────── */}
         <Secao label="Escopo do cálculo" />
 
         <Textarea
@@ -155,7 +157,6 @@ export function KpiForm({ aberto, kpi, onSave, onClose }: KpiFormProps) {
           rows={2}
         />
 
-        {/* ── Temporalidade ────────────────────────── */}
         <Secao label="Temporalidade" />
 
         <Textarea
@@ -166,7 +167,6 @@ export function KpiForm({ aberto, kpi, onSave, onClose }: KpiFormProps) {
           rows={2}
         />
 
-        {/* ── Origem e validação ───────────────────── */}
         <Secao label="Origem e validação" />
 
         <div className="grid grid-cols-2 gap-4">
@@ -184,7 +184,6 @@ export function KpiForm({ aberto, kpi, onSave, onClose }: KpiFormProps) {
           />
         </div>
 
-        {/* ── Regras de negócio ────────────────────── */}
         <Secao label="Regras de negócio" />
 
         <ListaStrings
@@ -194,7 +193,6 @@ export function KpiForm({ aberto, kpi, onSave, onClose }: KpiFormProps) {
           emptyText="Nenhuma regra cadastrada."
         />
 
-        {/* ── Observações ──────────────────────────── */}
         <Textarea
           label="Observações / Contexto"
           placeholder="Condicionais de cor, alertas, limites, benchmarks..."

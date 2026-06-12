@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal } from '@components/common/Modal';
 import { Input } from '@components/common/Input';
 import { Textarea } from '@components/common/Textarea';
@@ -27,9 +27,12 @@ function medidaVazia(): MedidaDAX {
 export function MedidaForm({ aberto, medida, kpis, medidas, onSave, onClose }: MedidaFormProps) {
   const [form, setForm] = useState<MedidaDAX>(() => medida ?? medidaVazia());
 
+  useEffect(() => {
+    if (aberto) setForm(medida ?? medidaVazia());
+  }, [aberto, medida]);
+
   function handleOpenChange(open: boolean) {
-    if (open) setForm(medida ?? medidaVazia());
-    else onClose();
+    if (!open) onClose();
   }
 
   function set<K extends keyof MedidaDAX>(campo: K, valor: MedidaDAX[K]) {
@@ -55,9 +58,8 @@ export function MedidaForm({ aberto, medida, kpis, medidas, onSave, onClose }: M
       title={medida ? 'Editar Medida DAX' : 'Nova Medida DAX'}
       maxWidth="xl"
     >
-      <div className="space-y-5 max-h-[72vh] overflow-y-auto pr-1 pb-8">
+      <div className="space-y-5 max-h-[72vh] overflow-y-auto pr-1">
 
-        {/* Identificação */}
         <div className="grid grid-cols-2 gap-4">
           <Input
             label="Nome da medida"
@@ -82,7 +84,6 @@ export function MedidaForm({ aberto, medida, kpis, medidas, onSave, onClose }: M
           rows={2}
         />
 
-        {/* Fórmula DAX */}
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-slate-700">Fórmula DAX</label>
           <textarea
@@ -96,7 +97,6 @@ export function MedidaForm({ aberto, medida, kpis, medidas, onSave, onClose }: M
           />
         </div>
 
-        {/* Referências cruzadas */}
         <div className="grid grid-cols-2 gap-4">
           <MultiSelect
             label="Dependências"
@@ -114,7 +114,6 @@ export function MedidaForm({ aberto, medida, kpis, medidas, onSave, onClose }: M
           />
         </div>
 
-        {/* Validação — campo relabelado */}
         <Textarea
           label="Como validar a medida"
           hint="Descreva como confirmar que o cálculo está correto: comparações esperadas, amostras, cenários de teste."
@@ -124,7 +123,6 @@ export function MedidaForm({ aberto, medida, kpis, medidas, onSave, onClose }: M
           rows={3}
         />
 
-        {/* Query de validação — campo novo */}
         <div className="flex flex-col gap-1.5">
           <div className="flex items-baseline gap-2">
             <label className="text-sm font-medium text-slate-700">Query de Validação</label>

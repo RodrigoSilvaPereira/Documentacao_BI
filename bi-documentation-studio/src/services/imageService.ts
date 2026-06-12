@@ -185,4 +185,19 @@ export const imageService = {
       return null;
     }
   },
+
+  async resolverUrlOrigem(origemPath: string): Promise<string | null> {
+    if (!isTauriEnv()) return null;
+    try {
+      const { convertFileSrc } = await import('@tauri-apps/api/core');
+      return `${convertFileSrc(origemPath)}?t=${Date.now()}`;
+    } catch {
+      return null;
+    }
+  },
+
+  async removerImagem(pastaProjeto: string, imagem: Imagem | null): Promise<void> {
+    if (!imagem) return;
+    await removerSeExistir(pastaProjeto, imagem.caminho);
+  },
 };

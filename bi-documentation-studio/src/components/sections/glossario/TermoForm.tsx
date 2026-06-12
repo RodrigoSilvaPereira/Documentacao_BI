@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal } from '@components/common/Modal';
 import { Input } from '@components/common/Input';
 import { Textarea } from '@components/common/Textarea';
@@ -20,9 +20,12 @@ function termoVazio(): TermoGlossario {
 export function TermoForm({ aberto, termo, onSave, onClose }: TermoFormProps) {
   const [form, setForm] = useState<TermoGlossario>(() => termo ?? termoVazio());
 
+  useEffect(() => {
+    if (aberto) setForm(termo ?? termoVazio());
+  }, [aberto, termo]);
+
   function handleOpenChange(open: boolean) {
-    if (open) setForm(termo ?? termoVazio());
-    else onClose();
+    if (!open) onClose();
   }
 
   function handleSalvar() {
@@ -57,12 +60,7 @@ export function TermoForm({ aberto, termo, onSave, onClose }: TermoFormProps) {
 
       <div className="flex justify-end gap-2 mt-5 pt-4 border-t border-slate-100">
         <Button variant="ghost" size="md" onClick={onClose}>Cancelar</Button>
-        <Button
-          variant="primary"
-          size="md"
-          onClick={handleSalvar}
-          disabled={!form.termo.trim()}
-        >
+        <Button variant="primary" size="md" onClick={handleSalvar} disabled={!form.termo.trim()}>
           {termo ? 'Salvar alterações' : 'Adicionar Termo'}
         </Button>
       </div>

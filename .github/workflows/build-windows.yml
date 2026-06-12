@@ -33,6 +33,11 @@ jobs:
         working-directory: bi-documentation-studio
         run: npm install
 
+      # ---------------- Force icon refresh ----------------
+      - name: Clean Cargo cache
+        working-directory: bi-documentation-studio/src-tauri
+        run: cargo clean
+
       # ---------------- Build Tauri ----------------
       - name: Build Tauri App
         working-directory: bi-documentation-studio

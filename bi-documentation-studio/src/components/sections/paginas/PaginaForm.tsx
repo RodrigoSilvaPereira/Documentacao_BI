@@ -9,6 +9,7 @@ import { FiltrosEditor } from './filtros/FiltrosEditor';
 import { generateId } from '@utils/id';
 import { imageService } from '@services/imageService';
 import { useAppStore } from '@store/useAppStore';
+import type { PendingImagem } from '@models/app';
 import type { Pagina, KPI, MedidaDAX, Query } from '@models/schema';
 
 interface PaginaFormProps {
@@ -37,79 +38,114 @@ function Separador({ label }: { label: string }) {
 
 export function PaginaForm({ aberto, pagina, kpis, medidas, queries, onSave, onClose }: PaginaFormProps) {
   const projetoAberto = useAppStore((s) => s.projetoAberto);
+
   const [form, setForm] = useState<Pagina>(() => pagina ?? paginaVazia());
   const [previewCaptura, setPreviewCaptura] = useState<string | null>(null);
-  const [carregandoImg, setCarregandoImg] = useState(false);
   const [salvando, setSalvando] = useState(false);
 
-  function handleOpenChange(open: boolean) {
-    if (open) {
-      setForm(pagina ?? paginaVazia());
-      setPreviewCaptura(null);
-    } else {
-      onClose();
-    }
+  const [pendingPagina,  setPendingPagina]  = useState<PendingImagem | null>(null);
+  const [pendingVisuais, setPendingVisuais] = useState<Record<string, PendingImagem>>({});
+
+  function setPendingVisual(id: string, pending: PendingImagem | null) {
+    setPendingVisuais((prev) => {
+      const next = { ...prev };
+      if (pending) next[id] = pending; else delete next[id];
+      return next;
+    });
   }
 
+  function handleOpenChange(open: boolean) {
+    if (!open) onClose();
+  }
+
+  // Reidrata TUDO ao abrir o modal — formulário, pendências e preview.
+  // Resolve tanto o bug de "form em branco" quanto o de "dados da página anterior".
   useEffect(() => {
-    if (!aberto || !pagina?.captura || !projetoAberto) { setPreviewCaptura(null); return; }
-    imageService.resolverUrl(pagina.captura, projetoAberto.caminho).then(setPreviewCaptura);
+    if (!aberto) return;
+
+    const novaForm = pagina ?? paginaVazia();
+    setForm(novaForm);
+    setPendingPagina(null);
+    setPendingVisuais({});
+
+    if (novaForm.captura && projetoAberto) {
+      imageService.resolverUrl(novaForm.captura, projetoAberto.caminho).then(setPreviewCaptura);
+    } else {
+      setPreviewCaptura(null);
+    }
   }, [aberto, pagina?.id]);
 
   function set<K extends keyof Pagina>(campo: K, valor: Pagina[K]) {
     setForm((prev) => ({ ...prev, [campo]: valor }));
   }
 
+  // Apenas seleciona o arquivo e gera preview — NENHUMA cópia ocorre aqui.
   async function handleSelecionarCaptura() {
-    if (!projetoAberto) return;
-    setCarregandoImg(true);
-    try {
-      const path = await imageService.selecionarImagem();
-      if (!path) return;
-
-      const tituloAtual = form.titulo.trim() || 'pagina';
-      const imagem = await imageService.importarPagina(path, projetoAberto.caminho, tituloAtual, form.captura);
-      const url    = await imageService.resolverUrl(imagem, projetoAberto.caminho);
-
-      setForm((prev) => ({ ...prev, captura: imagem }));
-      setPreviewCaptura(url);
-    } catch (err) {
-      console.error('Erro ao importar imagem:', err);
-    } finally {
-      setCarregandoImg(false);
-    }
+    const path = await imageService.selecionarImagem();
+    if (!path) return;
+    setPendingPagina({ acao: 'novo', origemPath: path });
+    setPreviewCaptura(await imageService.resolverUrlOrigem(path));
   }
 
   function handleRemoverCaptura() {
-    setForm((prev) => ({ ...prev, captura: null }));
+    setPendingPagina(form.captura ? { acao: 'remover' } : null);
     setPreviewCaptura(null);
   }
 
   async function handleSalvar() {
     const titulo = form.titulo.trim();
-    if (!titulo) return;
+    if (!titulo || !projetoAberto) return;
 
     setSalvando(true);
     try {
       let novaForm: Pagina = { ...form, titulo };
 
-      // Se o título da página mudou e existem imagens vinculadas,
-      // renomeia os arquivos (página e visuais) para refletir o novo nome.
-      if (projetoAberto && pagina && pagina.titulo !== titulo) {
-
-        if (novaForm.captura) {
-          const novaCaptura = await imageService.renomearImagemPagina(projetoAberto.caminho, novaForm.captura, titulo);
-          if (novaCaptura) novaForm.captura = novaCaptura;
-        }
-
-        novaForm.visuais = await Promise.all(
-          novaForm.visuais.map(async (v) => {
-            if (!v.captura) return v;
-            const nova = await imageService.renomearImagemVisual(projetoAberto.caminho, v.captura, titulo, v.nome);
-            return nova ? { ...v, captura: nova } : v;
-          }),
+      // ── Captura da página ──────────────────────────────────────
+      if (pendingPagina?.acao === 'novo') {
+        novaForm.captura = await imageService.importarPagina(
+          pendingPagina.origemPath, projetoAberto.caminho, titulo, novaForm.captura,
         );
+      } else if (pendingPagina?.acao === 'remover') {
+        await imageService.removerImagem(projetoAberto.caminho, novaForm.captura);
+        novaForm.captura = null;
+      } else if (pagina && pagina.titulo !== titulo && novaForm.captura) {
+        // Sem novas imagens — apenas o título mudou: renomeia a imagem existente
+        const nova = await imageService.renomearImagemPagina(projetoAberto.caminho, novaForm.captura, titulo);
+        if (nova) novaForm.captura = nova;
       }
+
+      // ── Capturas dos visuais ────────────────────────────────────
+      novaForm.visuais = await Promise.all(
+        novaForm.visuais.map(async (v) => {
+          const pending = pendingVisuais[v.id];
+
+          if (pending?.acao === 'novo') {
+            const imagem = await imageService.importarVisual(
+              pending.origemPath, projetoAberto.caminho, titulo, v.nome, v.captura,
+            );
+            return { ...v, captura: imagem };
+          }
+
+          if (pending?.acao === 'remover') {
+            await imageService.removerImagem(projetoAberto.caminho, v.captura);
+            return { ...v, captura: null };
+          }
+
+          // Sem pendência: renomeia se o título da página ou o nome do visual mudaram
+          if (v.captura) {
+            const original   = pagina?.visuais.find((ov) => ov.id === v.id);
+            const tituloMudou = !!pagina && pagina.titulo !== titulo;
+            const nomeMudou   = !!original && original.nome !== v.nome;
+
+            if (tituloMudou || nomeMudou) {
+              const nova = await imageService.renomearImagemVisual(projetoAberto.caminho, v.captura, titulo, v.nome);
+              if (nova) return { ...v, captura: nova };
+            }
+          }
+
+          return v;
+        }),
+      );
 
       onSave(novaForm);
       onClose();
@@ -129,7 +165,7 @@ export function PaginaForm({ aberto, pagina, kpis, medidas, queries, onSave, onC
         <Textarea label="Descrição" placeholder="Ex: Página inicial com visão geral dos resultados comerciais."
           value={form.descricao} onChange={(e) => set('descricao', e.target.value)} rows={2} />
 
-        {/* Captura da página */}
+        {/* Captura da página — imagem só é copiada ao salvar a página */}
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-slate-700">Captura da página</label>
           {previewCaptura ? (
@@ -141,16 +177,19 @@ export function PaginaForm({ aberto, pagina, kpis, medidas, queries, onSave, onC
               </button>
             </div>
           ) : (
-            <button type="button" onClick={handleSelecionarCaptura} disabled={carregandoImg || !imageService.isTauri()}
+            <button type="button" onClick={handleSelecionarCaptura} disabled={!imageService.isTauri()}
               className="h-32 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 hover:border-slate-400 flex flex-col items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               <Upload size={18} className="text-slate-400" />
               <p className="text-sm text-slate-500">
-                {imageService.isTauri()
-                  ? carregandoImg ? 'Importando...' : 'Clique para selecionar imagem'
-                  : 'Disponível no app desktop (npm run tauri dev)'}
+                {imageService.isTauri() ? 'Clique para selecionar imagem' : 'Disponível no app desktop (npm run tauri dev)'}
               </p>
               <p className="text-xs text-slate-400">PNG, JPG, JPEG</p>
             </button>
+          )}
+          {pendingPagina && (
+            <p className="text-xs text-amber-600">
+              {pendingPagina.acao === 'novo' ? 'Nova imagem — será salva ao confirmar.' : 'Imagem será removida ao salvar.'}
+            </p>
           )}
         </div>
 
@@ -162,6 +201,8 @@ export function PaginaForm({ aberto, pagina, kpis, medidas, queries, onSave, onC
           medidas={medidas}
           queries={queries}
           paginaTitulo={form.titulo}
+          pendingVisuais={pendingVisuais}
+          setPendingVisual={setPendingVisual}
         />
 
         <Separador label="Filtros da página" />

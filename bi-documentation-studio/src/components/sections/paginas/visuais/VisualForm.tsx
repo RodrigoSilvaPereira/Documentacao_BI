@@ -10,35 +10,54 @@ import { generateId } from '@utils/id';
 import { imageService } from '@services/imageService';
 import { useAppStore } from '@store/useAppStore';
 import { OPCOES_TIPO_VISUAL, type TipoVisual } from '@models/enums';
+import type { PendingImagem } from '@models/app';
 import type { Visual, KPI, MedidaDAX, Query } from '@models/schema';
 
 interface VisualFormProps {
-  visual?:      Visual;
-  kpis:         KPI[];
-  medidas:      MedidaDAX[];
-  queries:      Query[];
-  paginaTitulo: string;  // usado na nomenclatura da imagem do visual
-  onSave:       (visual: Visual) => void;
-  onCancel:     () => void;
+  visual?:            Visual;
+  kpis:               KPI[];
+  medidas:            MedidaDAX[];
+  queries:            Query[];
+  paginaTitulo:       string;
+  pendingImagem?:     PendingImagem;
+  onSetPendingImagem: (pending: PendingImagem | null) => void;
+  onSave:             (visual: Visual) => void;
+  onCancel:           () => void;
 }
 
 function visualVazio(): Visual {
   return {
-    id: generateId(), nome: '', tipo: 'cartao', tipo_outro: '',
+    id: generateId(), nome: '', tipo: 'card', tipo_outro: '',
     objetivo: '', descricao: '', kpis_ids: [], medidas_ids: [],
     tabelas_ids: [], campos: [], observacoes: '', captura: null,
   };
 }
 
-export function VisualForm({ visual, kpis, medidas, queries, paginaTitulo, onSave, onCancel }: VisualFormProps) {
+export function VisualForm({
+  visual, kpis, medidas, queries, paginaTitulo,
+  pendingImagem, onSetPendingImagem, onSave, onCancel,
+}: VisualFormProps) {
   const projetoAberto = useAppStore((s) => s.projetoAberto);
   const [form, setForm] = useState<Visual>(() => visual ?? visualVazio());
   const [previewCaptura, setPreviewCaptura] = useState<string | null>(null);
-  const [carregandoImg, setCarregandoImg] = useState(false);
+  const [pendingLocal, setPendingLocal] = useState<PendingImagem | null>(pendingImagem ?? null);
 
+  // Resolve a pré-visualização correta: imagem pendente (origem) > imagem já salva > nenhuma
   useEffect(() => {
-    if (!visual?.captura || !projetoAberto) { setPreviewCaptura(null); return; }
-    imageService.resolverUrl(visual.captura, projetoAberto.caminho).then(setPreviewCaptura);
+    setForm(visual ?? visualVazio());
+    setPendingLocal(pendingImagem ?? null);
+
+    (async () => {
+      if (pendingImagem?.acao === 'novo') {
+        setPreviewCaptura(await imageService.resolverUrlOrigem(pendingImagem.origemPath));
+      } else if (pendingImagem?.acao === 'remover') {
+        setPreviewCaptura(null);
+      } else if (visual?.captura && projetoAberto) {
+        setPreviewCaptura(await imageService.resolverUrl(visual.captura, projetoAberto.caminho));
+      } else {
+        setPreviewCaptura(null);
+      }
+    })();
   }, [visual?.id]);
 
   function set<K extends keyof Visual>(campo: K, valor: Visual[K]) {
@@ -50,33 +69,22 @@ export function VisualForm({ visual, kpis, medidas, queries, paginaTitulo, onSav
     setForm((prev) => ({ ...prev, tipo: novoTipo, tipo_outro: novoTipo !== 'outro' ? '' : prev.tipo_outro }));
   }
 
+  // Apenas seleciona o arquivo e gera preview — NENHUMA cópia ocorre aqui.
   async function handleSelecionarCaptura() {
-    if (!projetoAberto) return;
-    setCarregandoImg(true);
-    try {
-      const path = await imageService.selecionarImagem();
-      if (!path) return;
-
-      const nomeAtual = form.nome.trim() || 'visual';
-      const imagem = await imageService.importarVisual(path, projetoAberto.caminho, paginaTitulo, nomeAtual, form.captura);
-      const url    = await imageService.resolverUrl(imagem, projetoAberto.caminho);
-
-      setForm((prev) => ({ ...prev, captura: imagem }));
-      setPreviewCaptura(url);
-    } catch (err) {
-      console.error('Erro ao importar imagem do visual:', err);
-    } finally {
-      setCarregandoImg(false);
-    }
+    const path = await imageService.selecionarImagem();
+    if (!path) return;
+    setPendingLocal({ acao: 'novo', origemPath: path });
+    setPreviewCaptura(await imageService.resolverUrlOrigem(path));
   }
 
   function handleRemoverCaptura() {
-    setForm((prev) => ({ ...prev, captura: null }));
+    setPendingLocal(form.captura ? { acao: 'remover' } : null);
     setPreviewCaptura(null);
   }
 
   function handleSalvar() {
     if (!form.nome.trim()) return;
+    onSetPendingImagem(pendingLocal);
     onSave({ ...form, nome: form.nome.trim() });
   }
 
@@ -122,7 +130,7 @@ export function VisualForm({ visual, kpis, medidas, queries, paginaTitulo, onSav
       <Textarea label="Observações" placeholder="Ex: Ordenado do maior para o menor faturamento."
         value={form.observacoes} onChange={(e) => set('observacoes', e.target.value)} rows={2} />
 
-      {/* Captura do visual */}
+      {/* Captura do visual — imagem só é copiada quando a Página é salva */}
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-slate-700">Captura do visual</label>
         {previewCaptura ? (
@@ -134,15 +142,18 @@ export function VisualForm({ visual, kpis, medidas, queries, paginaTitulo, onSav
             </button>
           </div>
         ) : (
-          <button type="button" onClick={handleSelecionarCaptura} disabled={carregandoImg || !imageService.isTauri()}
+          <button type="button" onClick={handleSelecionarCaptura} disabled={!imageService.isTauri()}
             className="h-24 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 hover:border-slate-400 flex flex-col items-center justify-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             <Upload size={16} className="text-slate-400" />
             <p className="text-xs text-slate-500">
-              {imageService.isTauri()
-                ? carregandoImg ? 'Importando...' : 'Clique para selecionar'
-                : 'Disponível no app desktop'}
+              {imageService.isTauri() ? 'Clique para selecionar' : 'Disponível no app desktop'}
             </p>
           </button>
+        )}
+        {pendingLocal && (
+          <p className="text-xs text-amber-600">
+            {pendingLocal.acao === 'novo' ? 'Nova imagem — será salva ao confirmar a página.' : 'Imagem será removida ao salvar a página.'}
+          </p>
         )}
       </div>
 
