@@ -91,7 +91,7 @@ export function MedidaForm({ aberto, medida, kpis, medidas, onSave, onClose }: M
             placeholder={`Total Vendas =\nCALCULATE(\n    SUM(fVendas[ValorLiquido]),\n    fVendas[Status] = "Aprovado"\n)`}
             rows={6}
             spellCheck={false}
-            className="px-3 py-2.5 rounded-lg border border-slate-700 text-sm text-slate-100 bg-slate-900 font-mono placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-y leading-relaxed"
+            className="px-3 py-2.5 rounded-lg border border-slate-700 text-sm text-slate-100 bg-slate-900 font-mono placeholder:text-slate-600 focus:outline-none focus:border-brand-500 resize-y leading-relaxed"
             style={{ minHeight: '120px' }}
           />
         </div>
@@ -136,7 +136,7 @@ export function MedidaForm({ aberto, medida, kpis, medidas, onSave, onClose }: M
             placeholder={`-- Comparar resultado da medida com a origem\nSELECT SUM(ValorLiquido)\nFROM fVendas\nWHERE Status = 'Aprovado'\n  AND YEAR(Data) = 2024`}
             rows={5}
             spellCheck={false}
-            className="px-3 py-2.5 rounded-lg border border-slate-700 text-sm text-slate-100 bg-slate-900 font-mono placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-y"
+            className="px-3 py-2.5 rounded-lg border border-slate-700 text-sm text-slate-100 bg-slate-900 font-mono placeholder:text-slate-600 focus:outline-none focus:border-brand-500 resize-y"
             style={{ minHeight: '100px' }}
           />
         </div>

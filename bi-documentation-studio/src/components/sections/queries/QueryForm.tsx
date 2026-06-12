@@ -117,7 +117,7 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
             placeholder={`SELECT\n    id_pedido,\n    data_pedido,\n    valor_liquido\nFROM dbo.fVendas\nWHERE status = 'Aprovado'`}
             rows={7}
             spellCheck={false}
-            className="px-3 py-2.5 rounded-lg border border-slate-700 text-sm text-slate-100 bg-slate-900 font-mono placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-y transition-colors leading-relaxed"
+            className="px-3 py-2.5 rounded-lg border border-slate-700 text-sm text-slate-100 bg-slate-900 font-mono placeholder:text-slate-600 focus:outline-none focus:border-brand-500 resize-y transition-colors leading-relaxed"
             style={{ minHeight: '140px' }}
           />
         </div>
