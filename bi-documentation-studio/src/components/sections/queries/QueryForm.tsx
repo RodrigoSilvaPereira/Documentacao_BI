@@ -108,7 +108,7 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
             rows={7}
             spellCheck={false}
             className="px-3 py-2.5 rounded-lg border border-slate-700 text-sm text-slate-100 bg-slate-900 font-mono placeholder:text-slate-600 outline-none focus:outline-none focus:border-brand-500 resize-y transition-colors leading-relaxed"
-            style={{ minHeight: '140px' }}focus:
+            style={{ minHeight: '140px' }}
           />
         </div>
 

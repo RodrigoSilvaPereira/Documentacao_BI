@@ -27,7 +27,7 @@ interface VisualFormProps {
 
 function visualVazio(): Visual {
   return {
-    id: generateId(), nome: '', tipo: 'card', tipo_outro: '',
+    id: generateId(), nome: '', tipo: 'cartao', tipo_outro: '',
     objetivo: '', descricao: '', kpis_ids: [], medidas_ids: [],
     tabelas_ids: [], campos: [], observacoes: '', captura: null,
   };

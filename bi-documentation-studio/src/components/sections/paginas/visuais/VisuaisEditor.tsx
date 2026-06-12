@@ -7,22 +7,39 @@ import { VisualCard } from './VisualCard';
 import { VisualForm } from './VisualForm';
 import { imageService } from '@services/imageService';
 import { useAppStore } from '@store/useAppStore';
+
+import type { PendingImagem } from '@models/app';
 import type { Visual, KPI, MedidaDAX, Query } from '@models/schema';
 
 interface VisuaisEditorProps {
-  visuais:      Visual[];
-  onChange:     (visuais: Visual[]) => void;
-  kpis:         KPI[];
-  medidas:      MedidaDAX[];
-  queries:      Query[];
-  paginaTitulo: string;  // usado para nomenclatura das imagens dos visuais
+  visuais: Visual[];
+  onChange: (visuais: Visual[]) => void;
+  kpis: KPI[];
+  medidas: MedidaDAX[];
+  queries: Query[];
+  paginaTitulo: string;
+
+  pendingVisuais: Record<string, PendingImagem>;
+  setPendingVisual: (
+    id: string,
+    pending: PendingImagem | null
+  ) => void;
 }
 
-export function VisuaisEditor({ visuais, onChange, kpis, medidas, queries, paginaTitulo }: VisuaisEditorProps) {
+export function VisuaisEditor({
+  visuais,
+  onChange,
+  kpis,
+  medidas,
+  queries,
+  paginaTitulo,
+  pendingVisuais,
+  setPendingVisual,
+}: VisuaisEditorProps) {
   const projetoAberto = useAppStore((s) => s.projetoAberto);
 
-  const [formAberto,      setFormAberto]      = useState(false);
-  const [visualEditando,  setVisualEditando]  = useState<Visual | undefined>(undefined);
+  const [formAberto, setFormAberto] = useState(false);
+  const [visualEditando, setVisualEditando] = useState<Visual | undefined>(undefined);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   function abrirNovo() {
@@ -38,18 +55,38 @@ export function VisuaisEditor({ visuais, onChange, kpis, medidas, queries, pagin
   async function handleSalvar(visualNovo: Visual) {
     let v = visualNovo;
 
-    // Se o nome do visual mudou e existe imagem vinculada,
-    // renomeia o arquivo para manter a nomenclatura consistente.
-    if (visualEditando && visualEditando.nome !== v.nome && v.captura && projetoAberto) {
-      const nova = await imageService.renomearImagemVisual(projetoAberto.caminho, v.captura, paginaTitulo, v.nome);
-      if (nova) v = { ...v, captura: nova };
+    // Renomeia imagem quando o nome do visual muda
+    if (
+      visualEditando &&
+      visualEditando.nome !== v.nome &&
+      v.captura &&
+      projetoAberto
+    ) {
+      const nova = await imageService.renomearImagemVisual(
+        projetoAberto.caminho,
+        v.captura,
+        paginaTitulo,
+        v.nome,
+      );
+
+      if (nova) {
+        v = {
+          ...v,
+          captura: nova,
+        };
+      }
     }
 
     if (visualEditando) {
-      onChange(visuais.map((x) => (x.id === visualEditando.id ? v : x)));
+      onChange(
+        visuais.map((x) =>
+          x.id === visualEditando.id ? v : x,
+        ),
+      );
     } else {
       onChange([...visuais, v]);
     }
+
     setFormAberto(false);
     setVisualEditando(undefined);
   }
@@ -61,7 +98,11 @@ export function VisuaisEditor({ visuais, onChange, kpis, medidas, queries, pagin
 
   function handleExcluir() {
     if (!confirmDeleteId) return;
-    onChange(visuais.filter((v) => v.id !== confirmDeleteId));
+
+    onChange(
+      visuais.filter((v) => v.id !== confirmDeleteId),
+    );
+
     setConfirmDeleteId(null);
   }
 
@@ -71,8 +112,14 @@ export function VisuaisEditor({ visuais, onChange, kpis, medidas, queries, pagin
         <span className="text-sm font-medium text-slate-700">
           Visuais{visuais.length > 0 && ` (${visuais.length})`}
         </span>
+
         {!formAberto && (
-          <Button variant="outline" size="sm" leftIcon={<Plus size={12} />} onClick={abrirNovo}>
+          <Button
+            variant="outline"
+            size="sm"
+            leftIcon={<Plus size={12} />}
+            onClick={abrirNovo}
+          >
             Adicionar visual
           </Button>
         )}
@@ -93,7 +140,11 @@ export function VisuaisEditor({ visuais, onChange, kpis, medidas, queries, pagin
       )}
 
       {visuais.length === 0 && !formAberto && (
-        <EmptyState title="Nenhum visual cadastrado" description="Adicione os visuais desta página." className="py-6" />
+        <EmptyState
+          title="Nenhum visual cadastrado"
+          description="Adicione os visuais desta página."
+          className="py-6"
+        />
       )}
 
       {formAberto && (
@@ -104,6 +155,19 @@ export function VisuaisEditor({ visuais, onChange, kpis, medidas, queries, pagin
           medidas={medidas}
           queries={queries}
           paginaTitulo={paginaTitulo}
+          pendingImagem={
+            visualEditando
+              ? pendingVisuais[visualEditando.id]
+              : undefined
+          }
+          onSetPendingImagem={(pending) => {
+            if (!visualEditando) return;
+
+            setPendingVisual(
+              visualEditando.id,
+              pending,
+            );
+          }}
           onSave={handleSalvar}
           onCancel={handleCancelar}
         />
@@ -111,7 +175,9 @@ export function VisuaisEditor({ visuais, onChange, kpis, medidas, queries, pagin
 
       <ConfirmDialog
         open={confirmDeleteId !== null}
-        onOpenChange={(open) => { if (!open) setConfirmDeleteId(null); }}
+        onOpenChange={(open) => {
+          if (!open) setConfirmDeleteId(null);
+        }}
         title="Excluir visual"
         description="O visual será removido permanentemente desta página."
         confirmLabel="Excluir"
