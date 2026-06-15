@@ -3,9 +3,7 @@ import type {
 } from '@models/schema';
 import { LABELS_CARDINALIDADE, LABELS_DIRECAO, LABELS_FONTE_DADOS } from '@models/enums';
 
-// ════════════════════════════════════════════════════════════════════════
 // Helpers
-// ════════════════════════════════════════════════════════════════════════
 
 /** Remove acentos e caracteres especiais para gerar âncoras estáveis em qualquer visualizador. */
 function slugify(text: string): string {
@@ -55,27 +53,25 @@ function blockquote(text: string): string {
   return text.split('\n').map((l) => `> ${l}`).join('\n');
 }
 
-// ════════════════════════════════════════════════════════════════════════
 // Gerador principal
-// ════════════════════════════════════════════════════════════════════════
 
 export function gerarMarkdown(doc: Documentacao): string {
   const { projeto, kpis, queries, relacionamentos, medidas_dax, paginas, glossario, metadados } = doc;
   const L: string[] = [];
   const add = (...linhas: string[]) => L.push(...linhas);
 
-  // ── Lookups por ID ───────────────────────────────────────────────────
+  // Lookups por ID
   const kpiById     = new Map(kpis.map((k) => [k.id, k]));
   const medidaById  = new Map(medidas_dax.map((m) => [m.id, m]));
   const queryById   = new Map(queries.map((q) => [q.id, q]));
   const queryByNome = new Map(queries.map((q) => [q.nome.toLowerCase(), q]));
 
-  // ── Agrupamento de queries por prefixo (Fato / Dimensão / Outras) ────
+  // Agrupamento de queries por prefixo (Fato / Dimensão / Outras)
   const fatosQ     = queries.filter((q) => /^ft/i.test(q.nome));
   const dimensoesQ = queries.filter((q) => /^dim/i.test(q.nome));
   const outrasQ    = queries.filter((q) => !fatosQ.includes(q) && !dimensoesQ.includes(q));
 
-  // ── Referências cruzadas reversas ────────────────────────────────────
+  // Referências cruzadas reversas
 
   // Medidas que citam cada KPI em kpis_relacionados
   const medidasPorKpi = new Map<string, MedidaDAX[]>();
@@ -106,7 +102,7 @@ export function gerarMarkdown(doc: Documentacao): string {
     v.tabelas_ids.forEach((id) => registrarUso(visuaisPorQuery, id, { pagina: p, visual: v }));
   }));
 
-  // ── Helpers de link que dependem dos lookups acima ───────────────────
+  // Helpers de link que dependem dos lookups acima
   const kpiLink    = (id: string) => { const k = kpiById.get(id);    return k ? link(k.nome, anchorKpi(k)) : `\`${id}\``; };
   const medidaLink = (id: string) => {
     const m = medidaById.get(id);
@@ -120,9 +116,7 @@ export function gerarMarkdown(doc: Documentacao): string {
   const visualUsoLink = (uso: UsoVisual) =>
     `${link(uso.visual.nome, anchorVisual(uso.visual))} _(página ${link(uso.pagina.titulo, anchorPagina(uso.pagina))})_`;
 
-  // ════════════════════════════════════════════════════════════════════
   // Cabeçalho + Estatísticas
-  // ════════════════════════════════════════════════════════════════════
 
   add(`# ${projeto.titulo_relatorio || 'Projeto BI'}`, '');
   add('> 📘 Documentação técnica gerada automaticamente pelo **BI Documentation Studio**', '');
@@ -138,9 +132,7 @@ export function gerarMarkdown(doc: Documentacao): string {
   add(`| Filtros | ${totalFiltros} | Termos no Glossário | ${glossario.length} |`);
   add('');
 
-  // ════════════════════════════════════════════════════════════════════
   // Sumário
-  // ════════════════════════════════════════════════════════════════════
 
   add('## 📑 Sumário', '');
   add(`- ${link('📋 Projeto', 'projeto')}`);
@@ -172,9 +164,7 @@ export function gerarMarkdown(doc: Documentacao): string {
   if (glossario.length > 0) add(`- ${link('📖 Glossário', 'glossario')}`);
   add('');
 
-  // ════════════════════════════════════════════════════════════════════
   // Projeto
-  // ════════════════════════════════════════════════════════════════════
 
   add('---', '');
   add(anchorTag('projeto'));
@@ -197,9 +187,7 @@ export function gerarMarkdown(doc: Documentacao): string {
   }
   if (projeto.observacoes_gerais) add('### Observações Gerais', '', projeto.observacoes_gerais, '');
 
-  // ════════════════════════════════════════════════════════════════════
   // KPIs
-  // ════════════════════════════════════════════════════════════════════
 
   if (kpis.length > 0) {
     add('---', '');
@@ -266,9 +254,7 @@ export function gerarMarkdown(doc: Documentacao): string {
     });
   }
 
-  // ════════════════════════════════════════════════════════════════════
   // Queries (agrupadas em Fato / Dimensão / Outras)
-  // ════════════════════════════════════════════════════════════════════
 
   if (queries.length > 0) {
     add('---', '');
@@ -331,9 +317,7 @@ export function gerarMarkdown(doc: Documentacao): string {
     }
   }
 
-  // ════════════════════════════════════════════════════════════════════
   // Relacionamentos
-  // ════════════════════════════════════════════════════════════════════
 
   if (relacionamentos.length > 0) {
     add('---', '');
@@ -353,9 +337,7 @@ export function gerarMarkdown(doc: Documentacao): string {
     }
   }
 
-  // ════════════════════════════════════════════════════════════════════
   // Medidas DAX
-  // ════════════════════════════════════════════════════════════════════
 
   if (medidas_dax.length > 0) {
     add('---', '');
@@ -407,9 +389,7 @@ export function gerarMarkdown(doc: Documentacao): string {
     });
   }
 
-  // ════════════════════════════════════════════════════════════════════
   // Páginas
-  // ════════════════════════════════════════════════════════════════════
 
   if (paginas.length > 0) {
     add('---', '');
@@ -463,9 +443,7 @@ export function gerarMarkdown(doc: Documentacao): string {
     });
   }
 
-  // ════════════════════════════════════════════════════════════════════
   // Glossário (ordenado alfabeticamente)
-  // ════════════════════════════════════════════════════════════════════
 
   if (glossario.length > 0) {
     add('---', '');
@@ -475,10 +453,8 @@ export function gerarMarkdown(doc: Documentacao): string {
       .sort((a, b) => a.termo.localeCompare(b.termo, 'pt-BR'))
       .forEach((g) => add(`**${g.termo}:** ${g.definicao}`, ''));
   }
-
-  // ════════════════════════════════════════════════════════════════════
+  
   // Rodapé
-  // ════════════════════════════════════════════════════════════════════
 
   add('---', '');
   add(`*Documentado por: ${metadados.documentado_por || 'BI Documentation Studio'}*  `);

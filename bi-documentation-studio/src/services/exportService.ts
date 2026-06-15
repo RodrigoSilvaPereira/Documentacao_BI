@@ -6,11 +6,6 @@ import { gerarSufixoSnapshot } from '@utils/date';
 import { slugify } from '@utils/slug';
 import type { Documentacao } from '@models/schema';
 
-/**
- * Copia recursivamente todo o conteúdo de uma pasta para outra.
- * Usado para incluir imagens/paginas e imagens/visuais no snapshot,
- * permitindo abrir versões antigas com suas imagens originais.
- */
 async function copiarPastaRecursiva(origem: string, destino: string): Promise<void> {
   if (!(await exists(origem))) return;
 
@@ -48,8 +43,7 @@ export const exportService = {
     await writeTextFile(await join(pastaSnapshot, `documentacao-${sufixo}.json`), JSON.stringify(doc, null, 2));
     await writeTextFile(await join(pastaSnapshot, `${slug}-${sufixo}.md`), markdown);
 
-    // Copia as imagens da versão atual para o snapshot,
-    // permitindo visualizar versões antigas com suas imagens.
+    // Copia as imagens da versão atual para o snapshot, permitindo visualizar versões antigas com suas imagens.
     await copiarPastaRecursiva(
       await join(pastaProjeto, 'imagens', 'paginas'),
       await join(pastaSnapshot, 'imagens', 'paginas'),
