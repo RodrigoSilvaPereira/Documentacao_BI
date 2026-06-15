@@ -14,15 +14,14 @@ import type { PendingImagem } from '@models/app';
 import type { Visual, KPI, MedidaDAX, Query } from '@models/schema';
 
 interface VisualFormProps {
-  visual?:            Visual;
-  kpis:               KPI[];
-  medidas:            MedidaDAX[];
-  queries:            Query[];
-  paginaTitulo:       string;
-  pendingImagem?:     PendingImagem;
-  onSetPendingImagem: (pending: PendingImagem | null) => void;
-  onSave:             (visual: Visual) => void;
-  onCancel:           () => void;
+  visual?:        Visual;
+  kpis:           KPI[];
+  medidas:        MedidaDAX[];
+  queries:        Query[];
+  paginaTitulo:   string;
+  pendingImagem?: PendingImagem;
+  onSave:         (visual: Visual, pending: PendingImagem | null) => void;
+  onCancel:       () => void;
 }
 
 function visualVazio(): Visual {
@@ -35,7 +34,7 @@ function visualVazio(): Visual {
 
 export function VisualForm({
   visual, kpis, medidas, queries, paginaTitulo,
-  pendingImagem, onSetPendingImagem, onSave, onCancel,
+  pendingImagem, onSave, onCancel,
 }: VisualFormProps) {
   const projetoAberto = useAppStore((s) => s.projetoAberto);
   const [form, setForm] = useState<Visual>(() => visual ?? visualVazio());
@@ -69,7 +68,6 @@ export function VisualForm({
     setForm((prev) => ({ ...prev, tipo: novoTipo, tipo_outro: novoTipo !== 'outro' ? '' : prev.tipo_outro }));
   }
 
-  // Apenas seleciona o arquivo e gera preview — NENHUMA cópia ocorre aqui.
   async function handleSelecionarCaptura() {
     const path = await imageService.selecionarImagem();
     if (!path) return;
@@ -84,8 +82,7 @@ export function VisualForm({
 
   function handleSalvar() {
     if (!form.nome.trim()) return;
-    onSetPendingImagem(pendingLocal);
-    onSave({ ...form, nome: form.nome.trim() });
+    onSave({ ...form, nome: form.nome.trim() }, pendingLocal);
   }
 
   const kpiOptions    = kpis.map((k) => ({ value: k.id, label: k.nome }));

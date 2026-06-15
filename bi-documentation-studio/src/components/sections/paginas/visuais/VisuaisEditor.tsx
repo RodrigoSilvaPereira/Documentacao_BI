@@ -5,8 +5,6 @@ import { EmptyState } from '@components/common/EmptyState';
 import { ConfirmDialog } from '@components/common/ConfirmDialog';
 import { VisualCard } from './VisualCard';
 import { VisualForm } from './VisualForm';
-import { imageService } from '@services/imageService';
-import { useAppStore } from '@store/useAppStore';
 
 import type { PendingImagem } from '@models/app';
 import type { Visual, KPI, MedidaDAX, Query } from '@models/schema';
@@ -36,8 +34,6 @@ export function VisuaisEditor({
   pendingVisuais,
   setPendingVisual,
 }: VisuaisEditorProps) {
-  const projetoAberto = useAppStore((s) => s.projetoAberto);
-
   const [formAberto, setFormAberto] = useState(false);
   const [visualEditando, setVisualEditando] = useState<Visual | undefined>(undefined);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -52,40 +48,24 @@ export function VisuaisEditor({
     setFormAberto(true);
   }
 
-  async function handleSalvar(visualNovo: Visual) {
-    let v = visualNovo;
-
-    // Renomeia imagem quando o nome do visual muda
-    if (
-      visualEditando &&
-      visualEditando.nome !== v.nome &&
-      v.captura &&
-      projetoAberto
-    ) {
-      const nova = await imageService.renomearImagemVisual(
-        projetoAberto.caminho,
-        v.captura,
-        paginaTitulo,
-        v.nome,
-      );
-
-      if (nova) {
-        v = {
-          ...v,
-          captura: nova,
-        };
-      }
-    }
-
+  // A pendência de imagem chega junto com o visual salvo — funciona
+  // identicamente para visual novo (id gerado em visualVazio()) e
+  // para edição (id já existente). A renomeação física do arquivo
+  // (quando o nome do visual muda sem troca de imagem) é tratada no
+  // commit final em PaginaForm.handleSalvar, mantendo a regra de que
+  // nada toca o disco antes de salvar a página.
+  function handleSalvar(visualNovo: Visual, pending: PendingImagem | null) {
     if (visualEditando) {
       onChange(
         visuais.map((x) =>
-          x.id === visualEditando.id ? v : x,
+          x.id === visualEditando.id ? visualNovo : x,
         ),
       );
     } else {
-      onChange([...visuais, v]);
+      onChange([...visuais, visualNovo]);
     }
+
+    setPendingVisual(visualNovo.id, pending);
 
     setFormAberto(false);
     setVisualEditando(undefined);
@@ -102,6 +82,9 @@ export function VisuaisEditor({
     onChange(
       visuais.filter((v) => v.id !== confirmDeleteId),
     );
+
+    // Descarta qualquer pendência de imagem associada ao visual removido
+    setPendingVisual(confirmDeleteId, null);
 
     setConfirmDeleteId(null);
   }
@@ -160,14 +143,6 @@ export function VisuaisEditor({
               ? pendingVisuais[visualEditando.id]
               : undefined
           }
-          onSetPendingImagem={(pending) => {
-            if (!visualEditando) return;
-
-            setPendingVisual(
-              visualEditando.id,
-              pending,
-            );
-          }}
           onSave={handleSalvar}
           onCancel={handleCancelar}
         />

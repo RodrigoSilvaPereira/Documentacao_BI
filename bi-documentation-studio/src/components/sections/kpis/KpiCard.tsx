@@ -43,14 +43,14 @@ export function KpiCard({ kpi, onEdit, onDelete }: KpiCardProps) {
       <div className="mt-3 space-y-2">
         {kpi.formula && (
           <div className="px-2.5 py-1.5 bg-slate-50 rounded-lg border border-slate-200">
-            <p className="text-xs font-mono text-slate-600 truncate">{kpi.formula}</p>
+            <p className="text-xs font-mono text-slate-600 break-words">{kpi.formula}</p>
           </div>
         )}
         {kpi.o_que_mede && (
-          <p className="text-sm text-slate-600 leading-snug">{kpi.o_que_mede}</p>
+          <p className="text-sm text-slate-600 leading-snug break-words">{kpi.o_que_mede}</p>
         )}
         {kpi.objetivo_meta && (
-          <p className="text-sm text-slate-500 leading-snug">{kpi.objetivo_meta}</p>
+          <p className="text-sm text-slate-500 leading-snug break-words">{kpi.objetivo_meta}</p>
         )}
       </div>
 
@@ -58,12 +58,12 @@ export function KpiCard({ kpi, onEdit, onDelete }: KpiCardProps) {
       {(kpi.responsavel_validacao || kpi.regras_negocio.length > 0) && (
         <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-slate-100">
           {kpi.responsavel_validacao && (
-            <span className="text-xs text-slate-400 truncate">
+            <span className="text-xs text-slate-400 break-words">
               Validação: {kpi.responsavel_validacao}
             </span>
           )}
           {kpi.regras_negocio.length > 0 && (
-            <span className="text-xs text-slate-400 ml-auto">
+            <span className="text-xs text-slate-400 ml-auto flex-shrink-0">
               {kpi.regras_negocio.length} regra{kpi.regras_negocio.length > 1 ? 's' : ''}
             </span>
           )}
