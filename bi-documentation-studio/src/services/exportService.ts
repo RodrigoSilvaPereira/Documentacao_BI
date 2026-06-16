@@ -2,6 +2,7 @@ import { writeTextFile, mkdir, readDir, copyFile, exists } from '@tauri-apps/plu
 import { join } from '@tauri-apps/api/path';
 import { fileService } from './fileService';
 import { gerarMarkdown } from '@generators/markdownGenerator';
+import { gerarHtml } from '@generators/htmlGenerator';
 import { gerarSufixoSnapshot } from '@utils/date';
 import { slugify } from '@utils/slug';
 import type { Documentacao } from '@models/schema';
@@ -44,6 +45,31 @@ export const exportService = {
     await writeTextFile(await join(pastaSnapshot, `${slug}-${sufixo}.md`), markdown);
 
     // Copia as imagens da versão atual para o snapshot, permitindo visualizar versões antigas com suas imagens.
+    await copiarPastaRecursiva(
+      await join(pastaProjeto, 'imagens', 'paginas'),
+      await join(pastaSnapshot, 'imagens', 'paginas'),
+    );
+    await copiarPastaRecursiva(
+      await join(pastaProjeto, 'imagens', 'visuais'),
+      await join(pastaSnapshot, 'imagens', 'visuais'),
+    );
+  },
+
+  async exportarHtml(pastaProjeto: string, doc: Documentacao): Promise<void> {
+    const conteudo = gerarHtml(doc);
+    await fileService.salvarHtml(pastaProjeto, conteudo);
+    await this._criarSnapshotHtml(pastaProjeto, doc, conteudo);
+  },
+
+  async _criarSnapshotHtml(pastaProjeto: string, doc: Documentacao, html: string): Promise<void> {
+    const sufixo        = gerarSufixoSnapshot();
+    const slug          = slugify(doc.projeto.titulo_relatorio || 'projeto');
+    const pastaSnapshot = await join(pastaProjeto, 'exports', `historico-${slug}-${sufixo}`);
+    await mkdir(pastaSnapshot, { recursive: true });
+
+    await writeTextFile(await join(pastaSnapshot, `documentacao-${sufixo}.json`), JSON.stringify(doc, null, 2));
+    await writeTextFile(await join(pastaSnapshot, `${slug}-${sufixo}.html`), html);
+
     await copiarPastaRecursiva(
       await join(pastaProjeto, 'imagens', 'paginas'),
       await join(pastaSnapshot, 'imagens', 'paginas'),

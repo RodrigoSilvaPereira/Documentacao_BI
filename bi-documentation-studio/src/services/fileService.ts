@@ -33,4 +33,9 @@ export const fileService = {
   async copiarArquivo(origem: string, destino: string): Promise<void> {
     await copyFile(origem, destino);
   },
+
+  async salvarHtml(pastaProjeto: string, conteudo: string): Promise<void> {
+    const caminho = await join(pastaProjeto, 'README.html');
+    await writeTextFile(caminho, conteudo);
+  },
 };

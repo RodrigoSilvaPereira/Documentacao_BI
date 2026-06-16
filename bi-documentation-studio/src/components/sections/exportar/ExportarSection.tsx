@@ -14,8 +14,9 @@ export function ExportarSection() {
   const documento     = useDocStore((s) => s.documento);
   const projetoAberto = useAppStore((s) => s.projetoAberto);
 
-  const [exportando, setExportando] = useState(false);
-  const [resultado,  setResultado]  = useState<ExportResult>(null);
+  const [exportandoMd,   setExportandoMd]   = useState(false);
+  const [exportandoHtml, setExportandoHtml] = useState(false);
+  const [resultado,      setResultado]      = useState<ExportResult>(null);
 
   if (!documento) return null;
 
@@ -51,7 +52,7 @@ export function ExportarSection() {
 
   async function handleExportarMarkdown() {
     if (!projetoAberto || !documento) return;
-    setExportando(true);
+    setExportandoMd(true);
     setResultado(null);
     try {
       await exportService.exportarMarkdown(projetoAberto.caminho, documento);
@@ -62,9 +63,29 @@ export function ExportarSection() {
     } catch (err) {
       setResultado({ tipo: 'erro', mensagem: mensagemErro(err) });
     } finally {
-      setExportando(false);
+      setExportandoMd(false);
     }
   }
+
+  async function handleExportarHtml() {
+    if (!projetoAberto || !documento) return;
+    setExportandoHtml(true);
+    setResultado(null);
+    try {
+      await exportService.exportarHtml(projetoAberto.caminho, documento);
+      setResultado({
+        tipo: 'sucesso',
+        mensagem:
+          'README.html gerado com sucesso! Abra o arquivo em qualquer navegador e use Ctrl+P → "Salvar como PDF" para gerar o PDF.',
+      });
+    } catch (err) {
+      setResultado({ tipo: 'erro', mensagem: mensagemErro(err) });
+    } finally {
+      setExportandoHtml(false);
+    }
+  }
+
+  const qualquerExportando = exportandoMd || exportandoHtml;
 
   return (
     <div className="p-8 max-w-3xl mx-auto pb-16">
@@ -92,7 +113,7 @@ export function ExportarSection() {
       {/* Opções de exportação */}
       <div className="grid grid-cols-2 gap-4 mb-4">
 
-        {/* Markdown — principal */}
+        {/* Markdown */}
         <div className="flex flex-col gap-4 p-5 bg-white border border-slate-200 rounded-xl hover:border-slate-300 transition-colors">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-slate-100 rounded-lg">
@@ -113,31 +134,39 @@ export function ExportarSection() {
             variant="primary"
             size="md"
             fullWidth
-            loading={exportando}
-            disabled={!projetoAberto || exportando}
+            loading={exportandoMd}
+            disabled={!projetoAberto || qualquerExportando}
             onClick={handleExportarMarkdown}
           >
             Exportar Markdown
           </Button>
         </div>
 
-        {/* HTML — implementação futura */}
-        <div className="flex flex-col gap-4 p-5 bg-slate-50 border border-slate-200 rounded-xl opacity-60">
+        {/* HTML / PDF */}
+        <div className="flex flex-col gap-4 p-5 bg-white border border-slate-200 rounded-xl hover:border-slate-300 transition-colors">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-slate-200 rounded-lg">
-              <Globe size={18} className="text-slate-400" />
+            <div className="p-2.5 bg-blue-50 rounded-lg">
+              <Globe size={18} className="text-brand-600" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-500">HTML</p>
-              <p className="text-xs text-slate-400">Documento interativo</p>
+              <p className="text-sm font-semibold text-slate-800">HTML / PDF</p>
+              <p className="text-xs text-slate-400 font-mono">README.html + snapshot</p>
             </div>
           </div>
-          <p className="text-xs text-slate-400 leading-relaxed flex-1">
-            Documento HTML com navegação, imagens e formatação visual aprimorada.
-            Ideal para compartilhar como página web estática.
+          <p className="text-xs text-slate-500 leading-relaxed flex-1">
+            Gera <code className="font-mono bg-slate-100 px-1 rounded">README.html</code> com
+            navegação lateral e layout visual completo. Abra no navegador e use{' '}
+            <strong>Ctrl+P → Salvar como PDF</strong> para gerar o PDF.
           </p>
-          <Button variant="secondary" size="md" fullWidth disabled>
-            Em breve
+          <Button
+            variant="secondary"
+            size="md"
+            fullWidth
+            loading={exportandoHtml}
+            disabled={!projetoAberto || qualquerExportando}
+            onClick={handleExportarHtml}
+          >
+            Exportar HTML / PDF
           </Button>
         </div>
       </div>
