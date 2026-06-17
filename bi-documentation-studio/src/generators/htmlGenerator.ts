@@ -161,8 +161,8 @@ details.collapsible .dc-body{padding:1rem}
 .pag-head{padding:1.5rem;border-bottom:1px solid var(--brd)}
 .pag-title{font-size:1.1rem;font-weight:700;color:var(--tx)}
 .pag-body{padding:1.5rem}
-img.pg-img{width:100%;max-height:500px;object-fit:contain;border-radius:10px;border:1px solid var(--brd);margin:.875rem 0;background:var(--bg)}
-img.vs-img{width:100%;max-height:320px;object-fit:cover;border-radius:8px;border:1px solid var(--brd);margin:.625rem 0}
+img.pg-img{width:70%;display:block;margin:.875rem auto;object-fit:contain;border-radius:10px;border:1px solid var(--brd);background:var(--bg)}
+img.vs-img{width:70%;display:block;margin:.625rem auto;object-fit:contain;border-radius:8px;border:1px solid var(--brd)}
 .vc{background:var(--bg);border:1px solid var(--brd);border-radius:10px;padding:1.25rem;margin-bottom:.75rem}
 .vc-name{font-size:.875rem;font-weight:700;color:var(--tx);display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
 .filter-g{display:flex;align-items:flex-start;gap:.5rem;background:#faf5ff;border:1px solid #e9d5ff;border-radius:8px;padding:.7rem 1rem;font-size:.8rem;margin-bottom:.5rem}
@@ -343,6 +343,11 @@ function buildProjeto(doc: Documentacao): string {
     ${p.descricao_geral ? `<p class="mt"><strong>Descrição Geral</strong></p><p>${escNl(p.descricao_geral)}</p>` : ''}
     ${p.fontes_dados.length ? `<p class="mt"><strong>Fontes de Dados</strong></p><ul class="rl">${p.fontes_dados.map((f) => `<li><strong>${esc(f.tipo)}</strong> — ${esc(f.descricao)}</li>`).join('')}</ul>` : ''}
     ${p.observacoes_gerais ? `<p class="mt"><strong>Observações Gerais</strong></p><p>${escNl(p.observacoes_gerais)}</p>` : ''}
+    ${p.melhorias_futuras?.length ? `
+    <div style="margin-top:1.25rem;padding:1rem 1.25rem;background:#f0fdf4;border:1px solid #bbf7d0;border-left:3px solid #16a34a;border-radius:0 8px 8px 0">
+      <p style="font-weight:700;color:#15803d;margin-bottom:.5rem">💡 Possíveis Melhorias / Atualizações Futuras</p>
+      <ul class="rl">${(p.melhorias_futuras ?? []).map((m) => `<li>${escNl(m)}</li>`).join('')}</ul>
+    </div>` : ''}
   </div>
 </section>`;
 }

@@ -4,13 +4,12 @@ import { SectionHeader } from '@components/layout/SectionHeader';
 import { Card } from '@components/common/Card';
 import { Input } from '@components/common/Input';
 import { Textarea } from '@components/common/Textarea';
+import { ListaStrings } from '@components/common/ListaStrings';
 import { FontesEditor } from './FontesEditor';
 import type { Projeto } from '@models/schema';
 
-// Helper: gera um handler onChange que atualiza um campo string do projeto
-// Evita repetir `updateProjeto({ campo: e.target.value })` em cada campo
 function criarHandler(
-  campo: keyof Omit<Projeto, 'fontes_dados'>,
+  campo: keyof Omit<Projeto, 'fontes_dados' | 'melhorias_futuras'>,
   update: (dados: Partial<Projeto>) => void,
 ) {
   return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -18,14 +17,13 @@ function criarHandler(
 }
 
 export function ProjetoSection() {
-  const documento    = useDocStore((s) => s.documento);
+  const documento     = useDocStore((s) => s.documento);
   const updateProjeto = useDocStore((s) => s.updateProjeto);
 
-  // Seção não renderiza enquanto nenhum projeto estiver aberto
   if (!documento) return null;
 
   const { projeto } = documento;
-  const h = (campo: keyof Omit<Projeto, 'fontes_dados'>) =>
+  const h = (campo: keyof Omit<Projeto, 'fontes_dados' | 'melhorias_futuras'>) =>
     criarHandler(campo, updateProjeto);
 
   return (
@@ -47,7 +45,6 @@ export function ProjetoSection() {
             onChange={h('titulo_relatorio')}
             required
           />
-
           <div className="grid grid-cols-2 gap-4">
             <Input
               label="Área / Departamento"
@@ -62,7 +59,6 @@ export function ProjetoSection() {
               onChange={h('responsavel')}
             />
           </div>
-
           <div className="grid grid-cols-2 gap-4">
             <Input
               label="Data de criação"
@@ -122,11 +118,21 @@ export function ProjetoSection() {
           rows={4}
         />
       </Card>
+
+      {/* ── Card 5: Possíveis Melhorias ───────────────────────── */}
+      <Card>
+        <CardLabel>Possíveis Melhorias / Atualizações Futuras</CardLabel>
+        <ListaStrings
+          value={projeto.melhorias_futuras ?? []}
+          onChange={(items) => updateProjeto({ melhorias_futuras: items })}
+          placeholder="Ex: Adicionar filtro por filial na página de indicadores"
+          emptyText="Nenhuma melhoria cadastrada."
+        />
+      </Card>
     </div>
   );
 }
 
-// ── Sub-componente interno: cabeçalho de cada card ───────────────────────────
 function CardLabel({ children }: { children: React.ReactNode }) {
   return (
     <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">

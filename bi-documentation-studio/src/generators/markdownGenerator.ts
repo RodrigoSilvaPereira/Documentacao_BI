@@ -187,6 +187,12 @@ export function gerarMarkdown(doc: Documentacao): string {
   }
   if (projeto.observacoes_gerais) add('### Observações Gerais', '', projeto.observacoes_gerais, '');
 
+  if (projeto.melhorias_futuras?.length) {
+    add('### 💡 Possíveis Melhorias / Atualizações Futuras', '');
+    projeto.melhorias_futuras.forEach((m) => add(`- ${m}`));
+    add('');
+  }
+
   // KPIs
 
   if (kpis.length > 0) {

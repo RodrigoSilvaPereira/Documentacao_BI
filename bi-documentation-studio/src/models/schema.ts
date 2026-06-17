@@ -34,6 +34,7 @@ export interface Projeto {
   descricao_geral:    string;
   fontes_dados:       FonteDados[];
   observacoes_gerais: string;
+  melhorias_futuras?: string[];
 }
 
 // ── KPI ──────────────────────────────────────────────────────────────────────
