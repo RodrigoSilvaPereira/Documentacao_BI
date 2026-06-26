@@ -212,3 +212,104 @@ export function Sidebar() {
       {documento && (
         <div className="px-3 py-2.5 border-b border-slate-800">
           <div className="flex items-center gap-1.5 bg-slate-800 rounded-lg px-2.5 py-1.5">
+            <Search size={12} className="text-slate-500 flex-shrink-0" />
+            <input
+              type="text"
+              placeholder="Buscar..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              className="flex-1 bg-transparent text-xs text-slate-300 placeholder:text-slate-600 outline-none min-w-0"
+            />
+            {busca && (
+              <button onClick={() => setBusca('')} className="text-slate-500 hover:text-slate-300 transition-colors">
+                <X size={11} />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Navegação principal OU resultados da busca */}
+      <div className="flex-1 overflow-y-auto">
+        {busca ? (
+          // ── Resultados ──────────────────────────────────────────────────
+          <div className="px-2 py-2">
+            {hits.length === 0 ? (
+              <p className="text-[11px] text-slate-600 text-center py-4 px-2">
+                Nenhum resultado para "{busca}"
+              </p>
+            ) : (
+              <div className="space-y-0.5">
+                {hits.map((hit, i) => {
+                  const Icone = hit.icone;
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => navegarPara(hit.secao)}
+                      className="w-full flex items-start gap-2 px-2.5 py-2 rounded-lg text-left hover:bg-slate-800 transition-colors group"
+                    >
+                      <Icone size={12} className="text-slate-500 flex-shrink-0 mt-0.5" />
+                      <div className="min-w-0">
+                        <p className="text-xs text-slate-300 truncate leading-snug">{hit.nome}</p>
+                        {hit.detalhe && (
+                          <p className="text-[10px] text-slate-600 truncate">{hit.detalhe}</p>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+                <p className="text-[10px] text-slate-600 text-center pt-1.5">
+                  {hits.length} resultado{hits.length > 1 ? 's' : ''}
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          // ── Navegação normal ─────────────────────────────────────────────
+          <nav className="px-2 py-3 space-y-0.5">
+            {NAV_ITEMS.map((item) => {
+              const score = secaoQualidade(item.id);
+              const isProjeto = item.id === 'projeto';
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setSecaoAtiva(item.id)}
+                  className={cn(
+                    'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left',
+                    secaoAtiva === item.id
+                      ? 'bg-brand-700 text-white'
+                      : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100',
+                  )}
+                >
+                  <item.icon size={16} className="flex-shrink-0" />
+                  <span className="flex-1 truncate">{item.label}</span>
+                  {score && documento && (
+                    isProjeto
+                      ? <DotQualidade score={score} />
+                      : <BadgeQualidade score={score} />
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+        )}
+      </div>
+
+      {/* Exportar */}
+      <div className="px-2 pb-3 pt-2 border-t border-slate-800">
+        <button
+          onClick={() => setSecaoAtiva('exportar')}
+          className={cn(
+            'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left',
+            secaoAtiva === 'exportar'
+              ? 'bg-brand-700 text-white'
+              : 'text-brand-400 hover:bg-slate-800 hover:text-brand-300',
+          )}
+        >
+          <Download size={16} className="flex-shrink-0" />
+          Exportar
+        </button>
+      </div>
+    </aside>
+  );
+}
