@@ -14,6 +14,7 @@ export function KpisSection() {
   const adicionarKPI  = useDocStore((s) => s.adicionarKPI);
   const atualizarKPI  = useDocStore((s) => s.atualizarKPI);
   const removerKPI    = useDocStore((s) => s.removerKPI);
+  const duplicarKPI = useDocStore((s) => s.duplicarKPI);
 
   const [modalAberto,    setModalAberto]    = useState(false);
   const [kpiEditando,    setKpiEditando]    = useState<KPI | undefined>(undefined);

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { generateId } from '@utils/id';
 import type {
   Documentacao, Projeto, KPI, Query,
   Relacionamento, MedidaDAX, Pagina, TermoGlossario,
@@ -9,44 +10,42 @@ interface DocStore {
   documento:     Documentacao | null;
   temAlteracoes: boolean;
 
-  // Ciclo de vida do documento
   setDocumento:    (doc: Documentacao) => void;
   resetDocumento:  () => void;
   marcarAlterado:  () => void;
   resetAlteracoes: () => void;
 
-  // Seção: Projeto
   updateProjeto: (dados: Partial<Projeto>) => void;
 
-  // Seção: KPIs
-  adicionarKPI:    (kpi: KPI) => void;
-  atualizarKPI:    (id: string, dados: Partial<KPI>) => void;
-  removerKPI:      (id: string) => void;
+  adicionarKPI:  (kpi: KPI) => void;
+  atualizarKPI:  (id: string, dados: Partial<KPI>) => void;
+  removerKPI:    (id: string) => void;
+  duplicarKPI:   (id: string) => void;
 
-  // Seção: Queries
-  adicionarQuery:  (query: Query) => void;
-  atualizarQuery:  (id: string, dados: Partial<Query>) => void;
-  removerQuery:    (id: string) => void;
+  adicionarQuery: (query: Query) => void;
+  atualizarQuery: (id: string, dados: Partial<Query>) => void;
+  removerQuery:   (id: string) => void;
+  duplicarQuery:  (id: string) => void;
 
-  // Seção: Relacionamentos
   adicionarRelacionamento: (rel: Relacionamento) => void;
   atualizarRelacionamento: (id: string, dados: Partial<Relacionamento>) => void;
   removerRelacionamento:   (id: string) => void;
+  duplicarRelacionamento:  (id: string) => void;
 
-  // Seção: Medidas DAX
   adicionarMedida: (medida: MedidaDAX) => void;
   atualizarMedida: (id: string, dados: Partial<MedidaDAX>) => void;
   removerMedida:   (id: string) => void;
+  duplicarMedida:  (id: string) => void;
 
-  // Seção: Páginas
   adicionarPagina: (pagina: Pagina) => void;
   atualizarPagina: (id: string, dados: Partial<Pagina>) => void;
   removerPagina:   (id: string) => void;
+  duplicarPagina:  (id: string) => void;
 
-  // Seção: Glossário
-  adicionarTermo:  (termo: TermoGlossario) => void;
-  atualizarTermo:  (id: string, dados: Partial<TermoGlossario>) => void;
-  removerTermo:    (id: string) => void;
+  adicionarTermo: (termo: TermoGlossario) => void;
+  atualizarTermo: (id: string, dados: Partial<TermoGlossario>) => void;
+  removerTermo:   (id: string) => void;
+  duplicarTermo:  (id: string) => void;
 }
 
 export const useDocStore = create<DocStore>()(
@@ -54,19 +53,12 @@ export const useDocStore = create<DocStore>()(
     documento:     null,
     temAlteracoes: false,
 
-    setDocumento: (doc) =>
-      set((s) => { s.documento = doc; s.temAlteracoes = false; }),
+    setDocumento:    (doc) => set((s) => { s.documento = doc; s.temAlteracoes = false; }),
+    resetDocumento:  ()    => set((s) => { s.documento = null; s.temAlteracoes = false; }),
+    marcarAlterado:  ()    => set((s) => { s.temAlteracoes = true; }),
+    resetAlteracoes: ()    => set((s) => { s.temAlteracoes = false; }),
 
-    resetDocumento: () =>
-      set((s) => { s.documento = null; s.temAlteracoes = false; }),
-
-    marcarAlterado: () =>
-      set((s) => { s.temAlteracoes = true; }),
-
-    resetAlteracoes: () =>
-      set((s) => { s.temAlteracoes = false; }),
-
-    // -- Projeto ----------------------------------------------------------------
+    // ── Projeto ──────────────────────────────────────────────────────────
     updateProjeto: (dados) =>
       set((s) => {
         if (!s.documento) return;
@@ -74,7 +66,7 @@ export const useDocStore = create<DocStore>()(
         s.temAlteracoes = true;
       }),
 
-    // -- KPIs ----------------------------------------------------------------
+    // ── KPIs ─────────────────────────────────────────────────────────────
     adicionarKPI: (kpi) =>
       set((s) => { if (!s.documento) return; s.documento.kpis.push(kpi); s.temAlteracoes = true; }),
 
@@ -92,7 +84,22 @@ export const useDocStore = create<DocStore>()(
         s.temAlteracoes = true;
       }),
 
-    // -- Queries ----------------------------------------------------------------
+    // Campos de array (regras_negocio) são copiados por valor — spread é seguro aqui.
+    duplicarKPI: (id) =>
+      set((s) => {
+        if (!s.documento) return;
+        const orig = s.documento.kpis.find((k) => k.id === id);
+        if (!orig) return;
+        s.documento.kpis.push({
+          ...orig,
+          id: generateId(),
+          nome: `${orig.nome} (cópia)`,
+          regras_negocio: [...orig.regras_negocio],
+        });
+        s.temAlteracoes = true;
+      }),
+
+    // ── Queries ───────────────────────────────────────────────────────────
     adicionarQuery: (query) =>
       set((s) => { if (!s.documento) return; s.documento.queries.push(query); s.temAlteracoes = true; }),
 
@@ -110,7 +117,23 @@ export const useDocStore = create<DocStore>()(
         s.temAlteracoes = true;
       }),
 
-    // -- Relacionamentos ----------------------------------------------------------------
+    // Colunas recebem novos IDs para evitar colisão no modelo.
+    duplicarQuery: (id) =>
+      set((s) => {
+        if (!s.documento) return;
+        const orig = s.documento.queries.find((q) => q.id === id);
+        if (!orig) return;
+        s.documento.queries.push({
+          ...orig,
+          id: generateId(),
+          nome: `${orig.nome} (cópia)`,
+          transformacoes: [...orig.transformacoes],
+          colunas: orig.colunas.map((c) => ({ ...c, id: generateId() })),
+        });
+        s.temAlteracoes = true;
+      }),
+
+    // ── Relacionamentos ───────────────────────────────────────────────────
     adicionarRelacionamento: (rel) =>
       set((s) => { if (!s.documento) return; s.documento.relacionamentos.push(rel); s.temAlteracoes = true; }),
 
@@ -128,7 +151,16 @@ export const useDocStore = create<DocStore>()(
         s.temAlteracoes = true;
       }),
 
-    // -- Medidas DAX ----------------------------------------------------------------
+    duplicarRelacionamento: (id) =>
+      set((s) => {
+        if (!s.documento) return;
+        const orig = s.documento.relacionamentos.find((r) => r.id === id);
+        if (!orig) return;
+        s.documento.relacionamentos.push({ ...orig, id: generateId() });
+        s.temAlteracoes = true;
+      }),
+
+    // ── Medidas DAX ───────────────────────────────────────────────────────
     adicionarMedida: (medida) =>
       set((s) => { if (!s.documento) return; s.documento.medidas_dax.push(medida); s.temAlteracoes = true; }),
 
@@ -146,7 +178,22 @@ export const useDocStore = create<DocStore>()(
         s.temAlteracoes = true;
       }),
 
-    // -- Páginas ----------------------------------------------------------------
+    duplicarMedida: (id) =>
+      set((s) => {
+        if (!s.documento) return;
+        const orig = s.documento.medidas_dax.find((m) => m.id === id);
+        if (!orig) return;
+        s.documento.medidas_dax.push({
+          ...orig,
+          id: generateId(),
+          nome: `${orig.nome} (cópia)`,
+          dependencias:      [...orig.dependencias],
+          kpis_relacionados: [...orig.kpis_relacionados],
+        });
+        s.temAlteracoes = true;
+      }),
+
+    // ── Páginas ───────────────────────────────────────────────────────────
     adicionarPagina: (pagina) =>
       set((s) => { if (!s.documento) return; s.documento.paginas.push(pagina); s.temAlteracoes = true; }),
 
@@ -164,7 +211,37 @@ export const useDocStore = create<DocStore>()(
         s.temAlteracoes = true;
       }),
 
-    // -- Glossário ----------------------------------------------------------------
+    // Visuais e filtros recebem novos IDs; capturas de imagem são zeradas
+    // para evitar que dois registros apontem para o mesmo arquivo em disco.
+    duplicarPagina: (id) =>
+      set((s) => {
+        if (!s.documento) return;
+        const orig = s.documento.paginas.find((p) => p.id === id);
+        if (!orig) return;
+        s.documento.paginas.push({
+          ...orig,
+          id: generateId(),
+          titulo:  `${orig.titulo} (cópia)`,
+          captura: null,
+          visuais: orig.visuais.map((v) => ({
+            ...v,
+            id: generateId(),
+            captura: null,
+            kpis_ids:    [...v.kpis_ids],
+            medidas_ids: [...v.medidas_ids],
+            tabelas_ids: [...v.tabelas_ids],
+            campos:      [...v.campos],
+          })),
+          filtros: orig.filtros.map((f) => ({
+            ...f,
+            id: generateId(),
+            visuais_afetados: [...f.visuais_afetados],
+          })),
+        });
+        s.temAlteracoes = true;
+      }),
+
+    // ── Glossário ─────────────────────────────────────────────────────────
     adicionarTermo: (termo) =>
       set((s) => { if (!s.documento) return; s.documento.glossario.push(termo); s.temAlteracoes = true; }),
 
@@ -179,6 +256,19 @@ export const useDocStore = create<DocStore>()(
       set((s) => {
         if (!s.documento) return;
         s.documento.glossario = s.documento.glossario.filter((t) => t.id !== id);
+        s.temAlteracoes = true;
+      }),
+
+    duplicarTermo: (id) =>
+      set((s) => {
+        if (!s.documento) return;
+        const orig = s.documento.glossario.find((t) => t.id === id);
+        if (!orig) return;
+        s.documento.glossario.push({
+          ...orig,
+          id: generateId(),
+          termo: `${orig.termo} (cópia)`,
+        });
         s.temAlteracoes = true;
       }),
   })),

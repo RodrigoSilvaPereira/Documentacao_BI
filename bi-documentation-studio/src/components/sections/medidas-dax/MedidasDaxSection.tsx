@@ -14,6 +14,7 @@ export function MedidasDaxSection() {
   const adicionarMedida = useDocStore((s) => s.adicionarMedida);
   const atualizarMedida = useDocStore((s) => s.atualizarMedida);
   const removerMedida   = useDocStore((s) => s.removerMedida);
+  const duplicarMedida = useDocStore((s) => s.duplicarMedida);
 
   const [modalAberto,     setModalAberto]     = useState(false);
   const [medidaEditando,  setMedidaEditando]  = useState<MedidaDAX | undefined>(undefined);

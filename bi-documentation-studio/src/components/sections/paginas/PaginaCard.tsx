@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Layers, Pencil, Trash2, Image } from 'lucide-react';
+import { Layers, Pencil, Trash2, Copy, Image } from 'lucide-react';
 import { imageService } from '@services/imageService';
 import { useAppStore } from '@store/useAppStore';
 import type { Pagina } from '@models/schema';
 
 interface PaginaCardProps {
-  pagina:   Pagina;
-  onEdit:   (pagina: Pagina) => void;
-  onDelete: (id: string) => void;
+  pagina:       Pagina;
+  onEdit:       (pagina: Pagina) => void;
+  onDelete:     (id: string) => void;
+  onDuplicate?: (id: string) => void;
 }
 
-export function PaginaCard({ pagina, onEdit, onDelete }: PaginaCardProps) {
+export function PaginaCard({ pagina, onEdit, onDelete, onDuplicate }: PaginaCardProps) {
   const projetoAberto = useAppStore((s) => s.projetoAberto);
   const [thumbUrl, setThumbUrl] = useState<string | null>(null);
 
@@ -24,17 +25,13 @@ export function PaginaCard({ pagina, onEdit, onDelete }: PaginaCardProps) {
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors group">
       <div className="flex items-start justify-between gap-3">
-
-        {/* Thumbnail + info */}
         <div className="flex items-start gap-3 min-w-0 flex-1">
-          {/* Miniatura */}
           <div className="w-20 h-12 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 flex-shrink-0 flex items-center justify-center">
             {thumbUrl
               ? <img src={thumbUrl} alt={pagina.titulo} className="w-full h-full object-cover" />
               : <Image size={16} className="text-slate-400" />
             }
           </div>
-
           <div className="min-w-0">
             <h3 className="text-sm font-semibold text-slate-800">{pagina.titulo}</h3>
             {pagina.objetivo && (
@@ -42,9 +39,14 @@ export function PaginaCard({ pagina, onEdit, onDelete }: PaginaCardProps) {
             )}
           </div>
         </div>
-
-        {/* Ações */}
         <div className="flex gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+          {onDuplicate && (
+            <button onClick={() => onDuplicate(pagina.id)} aria-label="Duplicar Página"
+              title="Duplicar (imagens não incluídas)"
+              className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-md transition-colors">
+              <Copy size={14} />
+            </button>
+          )}
           <button onClick={() => onEdit(pagina)} aria-label="Editar página"
             className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-md transition-colors">
             <Pencil size={14} />

@@ -14,6 +14,7 @@ export function QueriesSection() {
   const adicionarQuery = useDocStore((s) => s.adicionarQuery);
   const atualizarQuery = useDocStore((s) => s.atualizarQuery);
   const removerQuery   = useDocStore((s) => s.removerQuery);
+  const duplicarQuery = useDocStore((s) => s.duplicarQuery);
 
   const [modalAberto,     setModalAberto]     = useState(false);
   const [queryEditando,   setQueryEditando]   = useState<Query | undefined>(undefined);

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BookOpen, Plus, Pencil, Trash2 } from 'lucide-react';
+import { BookOpen, Plus, Pencil, Trash2, Copy } from 'lucide-react';
 import { useDocStore } from '@store/useDocStore';
 import { SectionHeader } from '@components/layout/SectionHeader';
 import { Button } from '@components/common/Button';
@@ -13,42 +13,26 @@ export function GlossarioSection() {
   const adicionarTermo = useDocStore((s) => s.adicionarTermo);
   const atualizarTermo = useDocStore((s) => s.atualizarTermo);
   const removerTermo   = useDocStore((s) => s.removerTermo);
+  const duplicarTermo  = useDocStore((s) => s.duplicarTermo);
 
-  const [modalAberto,    setModalAberto]    = useState(false);
-  const [termoEditando,  setTermoEditando]  = useState<TermoGlossario | undefined>(undefined);
+  const [modalAberto,     setModalAberto]     = useState(false);
+  const [termoEditando,   setTermoEditando]   = useState<TermoGlossario | undefined>(undefined);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   if (!documento) return null;
 
-  // Exibe em ordem alfabética
   const termosOrdenados = [...documento.glossario].sort((a, b) =>
     a.termo.localeCompare(b.termo, 'pt-BR'),
   );
 
-  function abrirNovo() {
-    setTermoEditando(undefined);
-    setModalAberto(true);
-  }
-
-  function abrirEdicao(termo: TermoGlossario) {
-    setTermoEditando(termo);
-    setModalAberto(true);
-  }
+  function abrirNovo() { setTermoEditando(undefined); setModalAberto(true); }
+  function abrirEdicao(termo: TermoGlossario) { setTermoEditando(termo); setModalAberto(true); }
 
   function handleSave(termo: TermoGlossario) {
-    if (termoEditando) {
-      atualizarTermo(termoEditando.id, termo);
-    } else {
-      adicionarTermo(termo);
-    }
+    if (termoEditando) atualizarTermo(termoEditando.id, termo);
+    else               adicionarTermo(termo);
     setModalAberto(false);
     setTermoEditando(undefined);
-  }
-
-  function handleDeleteConfirm() {
-    if (!confirmDeleteId) return;
-    removerTermo(confirmDeleteId);
-    setConfirmDeleteId(null);
   }
 
   return (
@@ -77,20 +61,18 @@ export function GlossarioSection() {
                   <p className="text-sm text-slate-500 mt-1 leading-snug">{termo.definicao}</p>
                 )}
               </div>
-
               <div className="flex gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={() => abrirEdicao(termo)}
-                  aria-label="Editar termo"
-                  className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-md transition-colors"
-                >
+                <button onClick={() => duplicarTermo(termo.id)} aria-label="Duplicar termo"
+                  title="Duplicar"
+                  className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-md transition-colors">
+                  <Copy size={14} />
+                </button>
+                <button onClick={() => abrirEdicao(termo)} aria-label="Editar termo"
+                  className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-md transition-colors">
                   <Pencil size={14} />
                 </button>
-                <button
-                  onClick={() => setConfirmDeleteId(termo.id)}
-                  aria-label="Excluir termo"
-                  className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                >
+                <button onClick={() => setConfirmDeleteId(termo.id)} aria-label="Excluir termo"
+                  className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors">
                   <Trash2 size={14} />
                 </button>
               </div>
@@ -123,7 +105,7 @@ export function GlossarioSection() {
         title="Excluir Termo"
         description="O termo será removido permanentemente do glossário."
         confirmLabel="Excluir"
-        onConfirm={handleDeleteConfirm}
+        onConfirm={() => { if (confirmDeleteId) { removerTermo(confirmDeleteId); setConfirmDeleteId(null); } }}
         variant="danger"
       />
     </div>

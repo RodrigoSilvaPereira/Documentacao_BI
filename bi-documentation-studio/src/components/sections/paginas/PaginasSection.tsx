@@ -14,6 +14,7 @@ export function PaginasSection() {
   const adicionarPagina = useDocStore((s) => s.adicionarPagina);
   const atualizarPagina = useDocStore((s) => s.atualizarPagina);
   const removerPagina   = useDocStore((s) => s.removerPagina);
+  const duplicarPagina = useDocStore((s) => s.duplicarPagina);
 
   const [modalAberto,    setModalAberto]    = useState(false);
   const [paginaEditando, setPaginaEditando] = useState<Pagina | undefined>(undefined);

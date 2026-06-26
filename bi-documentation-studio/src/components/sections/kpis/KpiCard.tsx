@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Copy } from 'lucide-react';
 import { Badge } from '@components/common/Badge';
 import { LABELS_TIPO_VISUAL_KPI, type TipoVisualKPI } from '@models/enums';
 import type { KPI } from '@models/schema';
@@ -8,26 +8,32 @@ const BADGE_VARIANT: Record<TipoVisualKPI, 'blue' | 'purple' | 'green' | 'defaul
 };
 
 interface KpiCardProps {
-  kpi:      KPI;
-  onEdit:   (kpi: KPI) => void;
-  onDelete: (id: string) => void;
+  kpi:          KPI;
+  onEdit:       (kpi: KPI) => void;
+  onDelete:     (id: string) => void;
+  onDuplicate?: (id: string) => void;
 }
 
-export function KpiCard({ kpi, onEdit, onDelete }: KpiCardProps) {
+export function KpiCard({ kpi, onEdit, onDelete, onDuplicate }: KpiCardProps) {
   const labelTipo = kpi.tipo_visual === 'outro' && kpi.tipo_outro
     ? kpi.tipo_outro
     : LABELS_TIPO_VISUAL_KPI[kpi.tipo_visual];
 
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors group">
-
-      {/* Cabeçalho */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 min-w-0">
           <Badge variant={BADGE_VARIANT[kpi.tipo_visual]}>{labelTipo}</Badge>
           <h3 className="text-sm font-semibold text-slate-800 truncate">{kpi.nome}</h3>
         </div>
         <div className="flex gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+          {onDuplicate && (
+            <button onClick={() => onDuplicate(kpi.id)} aria-label="Duplicar KPI"
+              title="Duplicar"
+              className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-md transition-colors">
+              <Copy size={14} />
+            </button>
+          )}
           <button onClick={() => onEdit(kpi)} aria-label="Editar KPI"
             className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-md transition-colors">
             <Pencil size={14} />
@@ -39,22 +45,16 @@ export function KpiCard({ kpi, onEdit, onDelete }: KpiCardProps) {
         </div>
       </div>
 
-      {/* Corpo */}
       <div className="mt-3 space-y-2">
         {kpi.formula && (
           <div className="px-2.5 py-1.5 bg-slate-50 rounded-lg border border-slate-200">
             <p className="text-xs font-mono text-slate-600 break-words">{kpi.formula}</p>
           </div>
         )}
-        {kpi.o_que_mede && (
-          <p className="text-sm text-slate-600 leading-snug break-words">{kpi.o_que_mede}</p>
-        )}
-        {kpi.objetivo_meta && (
-          <p className="text-sm text-slate-500 leading-snug break-words">{kpi.objetivo_meta}</p>
-        )}
+        {kpi.o_que_mede    && <p className="text-sm text-slate-600 leading-snug break-words">{kpi.o_que_mede}</p>}
+        {kpi.objetivo_meta && <p className="text-sm text-slate-500 leading-snug break-words">{kpi.objetivo_meta}</p>}
       </div>
 
-      {/* Rodapé */}
       {(kpi.responsavel_validacao || kpi.regras_negocio.length > 0) && (
         <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-slate-100">
           {kpi.responsavel_validacao && (

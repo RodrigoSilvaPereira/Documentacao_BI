@@ -14,6 +14,7 @@ export function RelacionamentosSection() {
   const adicionarRelacionamento = useDocStore((s) => s.adicionarRelacionamento);
   const atualizarRelacionamento = useDocStore((s) => s.atualizarRelacionamento);
   const removerRelacionamento   = useDocStore((s) => s.removerRelacionamento);
+  const duplicarRelacionamento = useDocStore((s) => s.duplicarRelacionamento);
 
   const [modalAberto,       setModalAberto]       = useState(false);
   const [relEditando,       setRelEditando]        = useState<Relacionamento | undefined>(undefined);
