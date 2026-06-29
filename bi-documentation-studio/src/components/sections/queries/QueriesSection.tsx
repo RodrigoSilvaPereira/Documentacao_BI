@@ -71,6 +71,7 @@ export function QueriesSection() {
               query={query}
               onEdit={abrirEdicao}
               onDelete={(id) => setConfirmDeleteId(id)}
+              onDuplicate={(id) => duplicarQuery(id)}
             />
           ))}
         </div>

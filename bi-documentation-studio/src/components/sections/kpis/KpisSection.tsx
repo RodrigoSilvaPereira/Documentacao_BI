@@ -80,6 +80,7 @@ export function KpisSection() {
               kpi={kpi}
               onEdit={abrirEdicao}
               onDelete={(id) => setConfirmDeleteId(id)}
+              onDuplicate={(id) => duplicarKPI(id)}
             />
           ))}
         </div>

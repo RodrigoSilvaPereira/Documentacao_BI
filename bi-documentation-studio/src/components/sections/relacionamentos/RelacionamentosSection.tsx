@@ -71,6 +71,7 @@ export function RelacionamentosSection() {
               relacionamento={rel}
               onEdit={abrirEdicao}
               onDelete={(id) => setConfirmDeleteId(id)}
+              onDuplicate={(id) => duplicarRelacionamento(id)}
             />
           ))}
         </div>

@@ -71,6 +71,7 @@ export function PaginasSection() {
               pagina={pagina}
               onEdit={abrirEdicao}
               onDelete={(id) => setConfirmDeleteId(id)}
+              onDuplicate={(id) => duplicarPagina(id)}
             />
           ))}
         </div>

@@ -74,6 +74,7 @@ export function MedidasDaxSection() {
               todasMedidas={medidas_dax}
               onEdit={abrirEdicao}
               onDelete={(id) => setConfirmDeleteId(id)}
+              onDuplicate={(id) => duplicarMedida(id)}
             />
           ))}
         </div>
