@@ -38,6 +38,7 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "createUpdaterArtifacts": true,
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -45,5 +46,13 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "SUA_CHAVE_PUBLICA_AQUI",
+      "endpoints": [
+        "https://github.com/RodrigoSilvaPereira/Documentacao_BI/releases/latest/download/latest.json"
+      ]
+    }
   }
 }

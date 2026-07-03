@@ -27,6 +27,9 @@
   "fs:allow-exists",
   "fs:allow-copy-file",
   "fs:allow-rename",
-  "fs:allow-remove"
+  "fs:allow-remove",
+
+  "updater:default",
+  "process:default"
   ]
 }
