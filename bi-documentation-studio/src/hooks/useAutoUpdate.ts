@@ -49,11 +49,5 @@ export function useAutoUpdate() {
     setStatus('ocioso');
   }, []);
 
-  console.log("VERIFICANDO UPDATE...");
-
-  const resultado = await updateService.verificar();
-
-  console.log("RESULTADO UPDATE:", resultado);
-
   return { status, info, progresso, instalar, dispensar, verificarNovamente: verificar };
 }
