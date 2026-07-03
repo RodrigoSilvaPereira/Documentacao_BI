@@ -1,6 +1,6 @@
 [package]
 name = "bi-documentation-studio"
-version = "1.0.1"
+version = "1.0.2"
 description = "BI Documentation Studio"
 authors = []
 edition = "2021"
