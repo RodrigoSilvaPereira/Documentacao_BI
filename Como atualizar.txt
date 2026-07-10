@@ -1,0 +1,4 @@
+Quando quiser lançar uma versão: subir version packge.json, tauri.conf.json e Cargo.toml (ex: 1.0.1), commitar, e então:
+
+git tag v1.0.1
+git push origin v1.0.1
