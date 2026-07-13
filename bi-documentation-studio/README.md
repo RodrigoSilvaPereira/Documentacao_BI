@@ -272,20 +272,20 @@ npm run tauri build
 - [X] ~~CRUD de Projeto~~
 - [X] ~~CRUD de KPIs~~
 - [X] ~~CRUD de Queries~~
-- [ ] CRUD de Relacionamentos
-- [ ] CRUD de Medidas DAX
-- [ ] CRUD de Páginas
-- [ ] CRUD de Glossário
-- [ ] Exportação Markdown
-- [ ] Histórico de exportações
+- [X] ~~CRUD de Relacionamentos~~
+- [X] ~~CRUD de Medidas DAX~~
+- [X] ~~CRUD de Páginas~~
+- [X] ~~CRUD de Glossário~~
+- [X] ~~Exportação Markdown~~
+- [X] ~~Histórico de exportações~~
+- [X] ~~Busca global~~
+- [X] ~~Estatísticas do projeto~~
+- [X] ~~Exportação HTML~~
 
 ## V2
 
-- [ ] Exportação HTML
 - [ ] Importação de documentação existente
 - [ ] Templates personalizados
-- [ ] Busca global
-- [ ] Estatísticas do projeto
 
 ---
 
