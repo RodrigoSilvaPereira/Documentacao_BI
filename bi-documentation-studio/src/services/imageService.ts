@@ -165,27 +165,35 @@ export const imageService = {
     return renomearArquivo(pastaProjeto, capturaAntiga.caminho, caminho, arquivo);
   },
 
-  /**
+/**
    * Resolve o caminho relativo para uma URL utilizável em <img src>.
-   * Inclui um parâmetro de cache-busting para refletir imediatamente
-   * substituições de arquivo que mantêm o mesmo nome.
+   *
+   * Usa readFile + blob URL em vez de convertFileSrc/asset protocol,
+   * o que funciona com qualquer caminho acessível pelo FS plugin —
+   * incluindo shares de rede (caminhos UNC \\servidor\pasta\...).
    */
   async resolverUrl(imagem: Imagem | null, pastaProjeto: string): Promise<string | null> {
     if (!imagem?.caminho || !pastaProjeto || !isTauriEnv()) return null;
     try {
-      const { join }           = await import('@tauri-apps/api/path');
-      const { convertFileSrc } = await import('@tauri-apps/api/core');
-      const { exists }         = await import('@tauri-apps/plugin-fs');
+      const { join }     = await import('@tauri-apps/api/path');
+      const { readFile, exists } = await import('@tauri-apps/plugin-fs');
 
       const abs = await join(pastaProjeto, imagem.caminho);
       if (!(await exists(abs))) return null;
 
-      return `${convertFileSrc(abs)}?t=${Date.now()}`;
+      const bytes = await readFile(abs);
+      const ext   = imagem.arquivo.split('.').pop()?.toLowerCase() ?? 'png';
+      const mime  = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg'
+                  : ext === 'webp'                  ? 'image/webp'
+                  :                                   `image/${ext}`;
+
+      const blob = new Blob([bytes], { type: mime });
+      return URL.createObjectURL(blob);
     } catch {
       return null;
     }
   },
-
+  
   async resolverUrlOrigem(origemPath: string): Promise<string | null> {
     if (!isTauriEnv()) return null;
     try {

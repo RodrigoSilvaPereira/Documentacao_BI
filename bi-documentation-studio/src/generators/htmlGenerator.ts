@@ -33,8 +33,17 @@ function badge(text: string, cls = 'bd-slate'): string {
 function codeBlock(code: string, lang = ''): string {
   return `<pre><code class="lang-${lang}">${esc(code)}</code></pre>`;
 }
+
+// Fix 1: todos os blocos colapsáveis agora abrem com `open` por padrão.
+// Isso garante que o conteúdo apareça na exportação para PDF via impressão do browser.
 function collapsible(summary: string, content: string): string {
-  return `<details class="collapsible"><summary>${summary}</summary>${content}</details>`;
+  return `<details class="collapsible" open><summary>${summary}</summary>${content}</details>`;
+}
+
+// Resolve src de imagem: usa base64 do imageMap quando disponível,
+// senão cai no caminho relativo (funciona em drive local).
+function imgSrc(caminho: string, imageMap?: Map<string, string>): string {
+  return esc(imageMap?.get(caminho) ?? caminho);
 }
 
 // ─── CSS ──────────────────────────────────────────────────────────────────────
@@ -69,7 +78,8 @@ details.sx[open]>summary::after{transform:rotate(90deg)}
 .sl{display:block;padding:.3rem 1.25rem;font-size:.8rem;color:#64748b;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:2px solid transparent;transition:color .1s,background .1s}
 .sl:hover{color:#94a3b8;background:var(--sb-hover)}
 .sl.active{color:#93c5fd;border-left-color:var(--pri);background:#172033}
-.sl-top{font-size:.8rem;font-weight:500;color:#94a3b8;padding-left:1.25rem}
+/* Fix 2: sl-top agora é flex para que .s-n com margin-left:auto funcione corretamente */
+.sl-top{font-size:.8rem;font-weight:500;color:#94a3b8;padding:.3rem 1.25rem;display:flex;align-items:center;text-decoration:none;transition:color .1s}
 .sl-top:hover{color:#e2e8f0}
 .sl-sub{padding-left:2.25rem;font-size:.77rem}
 .sl-sub-lbl{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#334155;padding:.45rem 1.25rem .2rem 2rem}
@@ -285,7 +295,10 @@ function buildSidebar(doc: Documentacao): string {
     ${outQ.length   ? `<div class="sl-sub-lbl">Outras</div>${qLinks(outQ)}` : ''}
   </details>` : ''}
 
-  ${relacionamentos.length ? `<a class="sl sl-top" href="#sec-relacionamentos">🔗 Relacionamentos <span class="badge bd-slate" style="float:right;margin-right:.5rem;margin-top:.1rem">${relacionamentos.length}</span></a>` : ''}
+  ${relacionamentos.length
+    /* Fix 2: usa .s-n igual aos outros itens da sidebar em vez de .badge com float */
+    ? `<a class="sl sl-top" href="#sec-relacionamentos">🔗 Relacionamentos <span class="s-n">${relacionamentos.length}</span></a>`
+    : ''}
 
   ${medidas_dax.length ? `<details class="sx">
     <summary>📐 Medidas DAX <span class="s-n">${medidas_dax.length}</span></summary>
@@ -369,18 +382,14 @@ function buildKpis(doc: Documentacao): string {
   ${k.o_que_mede    ? `<p><strong>O que mede:</strong> ${escNl(k.o_que_mede)}</p>` : ''}
   ${k.objetivo_meta ? `<p><strong>Objetivo / Meta:</strong> ${escNl(k.objetivo_meta)}</p>` : ''}
   ${k.formula       ? `<div class="kc-formula">📐 ${escNl(k.formula)}</div>` : ''}
-
   ${(k.o_que_entra || k.o_que_nao_entra || k.excecoes) ? `
   <div class="mt-sm">
     ${k.o_que_entra    ? `<div class="scope scope-in"><span class="sc-lbl">✅ O que entra:</span>${escNl(k.o_que_entra)}</div>` : ''}
     ${k.o_que_nao_entra ? `<div class="scope scope-out"><span class="sc-lbl">❌ O que não entra:</span>${escNl(k.o_que_nao_entra)}</div>` : ''}
     ${k.excecoes       ? `<div class="scope scope-exc"><span class="sc-lbl">⚠️ Exceções:</span>${escNl(k.excecoes)}</div>` : ''}
   </div>` : ''}
-
   ${k.regras_temporais ? `<p class="mt"><strong>Regras Temporais:</strong> ${escNl(k.regras_temporais)}</p>` : ''}
-
   ${metaRows ? `<table class="it mt">${metaRows}</table>` : ''}
-
   ${k.regras_negocio.length ? `<p class="mt"><strong>Regras de Negócio:</strong></p><ul class="rl">${k.regras_negocio.map((r) => `<li>${escNl(r)}</li>`).join('')}</ul>` : ''}
   ${k.observacoes ? `<p class="mt"><strong>Observações:</strong> ${escNl(k.observacoes)}</p>` : ''}
 </div>`;
@@ -394,7 +403,7 @@ function buildKpis(doc: Documentacao): string {
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
 
-function buildQueryCard(q: Query): string {
+function buildQueryCard(q: Query, imageMap?: Map<string, string>): string {
   const fonte = q.fonte_dados === 'outro' && q.fonte_dados_outro
     ? esc(q.fonte_dados_outro)
     : esc(LABELS_FONTE_DADOS[q.fonte_dados] ?? q.fonte_dados);
@@ -419,7 +428,7 @@ function buildQueryCard(q: Query): string {
 </div>`;
 }
 
-function buildQueries(doc: Documentacao): string {
+function buildQueries(doc: Documentacao, imageMap?: Map<string, string>): string {
   if (!doc.queries.length) return '';
   const fatosQ = doc.queries.filter((q) => /^ft/i.test(q.nome));
   const dimQ   = doc.queries.filter((q) => /^dim/i.test(q.nome));
@@ -427,9 +436,9 @@ function buildQueries(doc: Documentacao): string {
 
   return `<section id="sec-queries">
   <h2 class="sec-h">🗄️ Queries / Tabelas <span class="sec-count">${doc.queries.length}</span></h2>
-  ${fatosQ.length ? `<div class="grp-lbl">🟦 Tabelas Fato</div>${fatosQ.map(buildQueryCard).join('')}` : ''}
-  ${dimQ.length   ? `<div class="grp-lbl">🟩 Tabelas Dimensão</div>${dimQ.map(buildQueryCard).join('')}` : ''}
-  ${outQ.length   ? `<div class="grp-lbl">⬜ Outras Tabelas</div>${outQ.map(buildQueryCard).join('')}` : ''}
+  ${fatosQ.length ? `<div class="grp-lbl">🟦 Tabelas Fato</div>${fatosQ.map((q) => buildQueryCard(q, imageMap)).join('')}` : ''}
+  ${dimQ.length   ? `<div class="grp-lbl">🟩 Tabelas Dimensão</div>${dimQ.map((q) => buildQueryCard(q, imageMap)).join('')}` : ''}
+  ${outQ.length   ? `<div class="grp-lbl">⬜ Outras Tabelas</div>${outQ.map((q) => buildQueryCard(q, imageMap)).join('')}` : ''}
 </section>`;
 }
 
@@ -467,7 +476,7 @@ function buildRelacionamentos(doc: Documentacao): string {
 
 function buildMedidas(doc: Documentacao): string {
   if (!doc.medidas_dax.length) return '';
-  const kpiById   = new Map(doc.kpis.map((k) => [k.id, k]));
+  const kpiById    = new Map(doc.kpis.map((k) => [k.id, k]));
   const medidaById = new Map(doc.medidas_dax.map((m) => [m.id, m]));
 
   const cards = doc.medidas_dax.map((m) => {
@@ -501,9 +510,9 @@ function buildMedidas(doc: Documentacao): string {
 
 // ─── Páginas ─────────────────────────────────────────────────────────────────
 
-function buildPaginas(doc: Documentacao): string {
+function buildPaginas(doc: Documentacao, imageMap?: Map<string, string>): string {
   if (!doc.paginas.length) return '';
-  const kpiById   = new Map(doc.kpis.map((k) => [k.id, k]));
+  const kpiById    = new Map(doc.kpis.map((k) => [k.id, k]));
   const medidaById = new Map(doc.medidas_dax.map((m) => [m.id, m]));
   const queryById  = new Map(doc.queries.map((q) => [q.id, q]));
 
@@ -517,11 +526,14 @@ function buildPaginas(doc: Documentacao): string {
       const tabTags   = v.tabelas_ids.map((id) => queryById.get(id)).filter(Boolean).map((q) => badge(q!.nome, 'bd-slate'));
       const campoTags = v.campos.map((c) => `<code>${esc(c)}</code>`);
 
+      // Fix 3: usa base64 do imageMap quando disponível
+      const vSrc = v.captura?.caminho ? imgSrc(v.captura.caminho, imageMap) : null;
+
       return `<div class="vc" id="v-${v.id.slice(0,8)}">
   <div class="vc-name">${esc(v.nome)} ${badge(tipoLabel(v.tipo, v.tipo_outro), 'bd-slate')}</div>
   ${v.objetivo  ? `<p><strong>Objetivo:</strong> ${esc(v.objetivo)}</p>` : ''}
   ${v.descricao ? `<p>${escNl(v.descricao)}</p>` : ''}
-  ${v.captura?.caminho ? `<img class="vs-img" src="${esc(v.captura.caminho)}" alt="${esc(v.nome)}" loading="lazy">` : ''}
+  ${vSrc ? `<img class="vs-img" src="${vSrc}" alt="${esc(v.nome)}" loading="lazy">` : ''}
   ${kpiTags.length   ? `<p class="mt-sm"><strong>KPIs:</strong></p><div class="ref-list">${kpiTags.join('')}</div>` : ''}
   ${medTags.length   ? `<p class="mt-sm"><strong>Medidas DAX:</strong></p><div class="ref-list">${medTags.join('')}</div>` : ''}
   ${tabTags.length   ? `<p class="mt-sm"><strong>Tabelas:</strong></p><div class="ref-list">${tabTags.join('')}</div>` : ''}
@@ -551,6 +563,9 @@ function buildPaginas(doc: Documentacao): string {
   </div>
 </div>`).join('');
 
+    // Fix 3: usa base64 do imageMap quando disponível
+    const pSrc = p.captura?.caminho ? imgSrc(p.captura.caminho, imageMap) : null;
+
     return `<div class="pagina" id="p-${p.id.slice(0,8)}">
   <div class="pag-head">
     <div class="pag-title">📄 ${esc(p.titulo)}</div>
@@ -558,12 +573,9 @@ function buildPaginas(doc: Documentacao): string {
   </div>
   <div class="pag-body">
     ${p.descricao ? `<p>${escNl(p.descricao)}</p>` : ''}
-    ${p.captura?.caminho ? `<img class="pg-img" src="${esc(p.captura.caminho)}" alt="${esc(p.titulo)}" loading="lazy">` : ''}
-
+    ${pSrc ? `<img class="pg-img" src="${pSrc}" alt="${esc(p.titulo)}" loading="lazy">` : ''}
     ${filtrosGlobalHtml ? `<p class="mt"><strong>🌐 Filtros de Relatório (todas as páginas):</strong></p>${filtrosGlobalHtml}` : ''}
-
     ${visuaisHtml ? `<p class="mt"><strong>Visuais (${p.visuais.length}):</strong></p>${visuaisHtml}` : ''}
-
     ${filtrosPaginaHtml ? `<p class="mt"><strong>Filtros de Página (${filtrosPagina.length}):</strong></p>${filtrosPaginaHtml}` : ''}
   </div>
 </div>`;
@@ -591,7 +603,9 @@ function buildGlossario(doc: Documentacao): string {
 
 // ─── Gerador principal ────────────────────────────────────────────────────────
 
-export function gerarHtml(doc: Documentacao): string {
+// Fix 3: aceita imageMap opcional com base64 data URIs para cada imagem.
+// Quando presente, o HTML gerado é completamente autocontido (funciona em rede).
+export function gerarHtml(doc: Documentacao, imageMap?: Map<string, string>): string {
   const titulo     = doc.projeto.titulo_relatorio || 'Projeto BI';
   const dataExport = new Date().toLocaleDateString('pt-BR', { dateStyle: 'long' });
 
@@ -603,10 +617,10 @@ export function gerarHtml(doc: Documentacao): string {
     buildStats(doc),
     buildProjeto(doc),
     buildKpis(doc),
-    buildQueries(doc),
+    buildQueries(doc, imageMap),
     buildRelacionamentos(doc),
     buildMedidas(doc),
-    buildPaginas(doc),
+    buildPaginas(doc, imageMap),
     buildGlossario(doc),
     `<footer>
       <p>Documentado por: <strong>${esc(doc.metadados.documentado_por || 'BI Documentation Studio')}</strong></p>
