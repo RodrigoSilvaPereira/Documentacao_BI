@@ -248,10 +248,11 @@ Implementação ............ Concluído
 Persistência (JSON) ...... Concluído
 Gestão de Imagens ........ Concluído
 Exportação (Markdown) .... Concluído
-V1.0 ...................... Lançada
+Exportação (HTML) ........ Concluído
+Comparação entre versões . Concluído
+V1.0 ..................... Lançada
 
-Exportação (HTML) ......... Planejado (V2)
+
 Templates de documentação . Planejado (V2)
 Diagrama de relacionamentos Planejado (V2)
-Comparação entre versões .. Planejado (V2)
 ```
