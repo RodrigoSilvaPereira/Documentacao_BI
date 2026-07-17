@@ -88,11 +88,12 @@ export function ColunasEditor({ value, onChange }: ColunasEditorProps) {
                 {/* Nome + ícone calculada */}
                 <div className="flex items-center gap-1.5 min-w-0">
                   {col.calculada && (
-                    <Zap
-                      size={11}
-                      className="text-purple-500 flex-shrink-0"
-                      title="Coluna calculada"
-                    />
+                    <span title="Coluna calculada">
+                        <Zap
+                            size={11}
+                            className="text-purple-500 flex-shrink-0"
+                        />
+                    </span>
                   )}
                   <span className="text-sm font-mono text-slate-800 truncate">
                     {col.nome}
