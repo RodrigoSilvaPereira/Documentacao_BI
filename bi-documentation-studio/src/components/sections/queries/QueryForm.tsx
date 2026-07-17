@@ -59,7 +59,7 @@ export function QueryForm({ aberto, query, onSave, onClose }: QueryFormProps) {
       open={aberto}
       onOpenChange={handleOpenChange}
       title={query ? 'Editar Query' : 'Nova Query'}
-      maxWidth="xl"
+      maxWidth="2xl"
     >
       <div className="space-y-5 max-h-[72vh] overflow-y-auto pr-1">
 

@@ -290,10 +290,22 @@ export function gerarMarkdown(doc: Documentacao): string {
       }
 
       if (q.colunas.length > 0) {
-        add('**Colunas Principais:**', '');
-        add('| Coluna | Tipo | Descrição |', '|---|---|---|');
-        q.colunas.forEach((c) => add(`| \`${c.nome}\` | ${cell(c.tipo)} | ${cell(c.descricao)} |`));
+        add('**Colunas Principais:**', '', '| Coluna | Tipo | Descrição |', '|---|---|---|');
+        q.colunas.forEach((c) => {
+          const prefixo = c.calculada ? '⚙️ ' : '';
+          add(`| ${prefixo}\`${c.nome}\` | ${cell(c.tipo)} | ${cell(c.descricao)} |`);
+        });
         add('');
+
+        // Blocos de fórmula para colunas calculadas — tabela não comporta fórmulas longas
+        const calculadas = q.colunas.filter((c) => c.calculada && c.formula_coluna);
+        if (calculadas.length > 0) {
+          add('**Fórmulas das Colunas Calculadas:**', '');
+          calculadas.forEach((c) => {
+            add(`**\`${c.nome}\`**`, '');
+            add('```', c.formula_coluna!, '```', '');
+          });
+        }
       }
 
       if (q.observacoes) add(`**Observações:** ${q.observacoes}`, '');

@@ -16,10 +16,12 @@ export interface FonteDados {
 }
 
 export interface ColunaPrincipal {
-  id:       string;
-  nome:     string;
-  tipo:     string;
-  descricao: string;
+  id:              string;
+  nome:            string;
+  tipo:            string;
+  descricao:       string;
+  calculada?:      boolean;
+  formula_coluna?: string;
 }
 
 // ── Projeto ──────────────────────────────────────────────────────────────────

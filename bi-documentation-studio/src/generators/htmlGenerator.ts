@@ -421,7 +421,24 @@ function buildQueryCard(q: Query, imageMap?: Map<string, string>): string {
     <p class="mt"><strong>Colunas Principais:</strong></p>
     <table class="dt">
       <thead><tr><th>Coluna</th><th>Tipo</th><th>Descrição</th></tr></thead>
-      <tbody>${q.colunas.map((c) => `<tr><td><code>${esc(c.nome)}</code></td><td>${esc(c.tipo)}</td><td>${escNl(c.descricao)}</td></tr>`).join('')}</tbody>
+      <tbody>
+        ${q.colunas.map((c) => `
+        <tr>
+          <td>
+            ${c.calculada ? `<span title="Coluna calculada" style="margin-right:.25rem">⚙️</span>` : ''}
+            <code>${esc(c.nome)}</code>
+            ${c.calculada ? `<span class="badge bd-purple" style="margin-left:.375rem;font-size:.6rem">Calculada</span>` : ''}
+          </td>
+          <td>${esc(c.tipo)}</td>
+          <td>${escNl(c.descricao)}</td>
+        </tr>
+        ${c.calculada && c.formula_coluna ? `
+        <tr>
+          <td colspan="3" style="background:var(--code-bg);padding:.5rem .875rem;border-bottom:1px solid var(--brd)">
+            <code style="color:var(--code-tx);font-size:.75rem;white-space:pre-wrap;display:block;font-family:'SF Mono',Consolas,monospace">${esc(c.formula_coluna)}</code>
+          </td>
+        </tr>` : ''}`).join('')}
+      </tbody>
     </table>` : ''}
     ${q.observacoes ? `<p class="mt"><strong>Observações:</strong> ${escNl(q.observacoes)}</p>` : ''}
   </div>
