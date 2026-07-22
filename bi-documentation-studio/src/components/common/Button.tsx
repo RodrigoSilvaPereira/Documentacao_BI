@@ -13,7 +13,7 @@ const VARIANTS: Record<Variant, string> = {
   outline:   'border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-50',
 };
 
-const SIZES: Record<Size, string> = {
+const SIZES: Record<Size, string> = {  
   sm: 'h-7  px-3 text-xs gap-1.5',
   md: 'h-9  px-4 text-sm gap-2',
   lg: 'h-11 px-5 text-sm gap-2',

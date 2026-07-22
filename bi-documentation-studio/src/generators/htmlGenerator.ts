@@ -434,8 +434,8 @@ function buildQueryCard(q: Query, imageMap?: Map<string, string>): string {
         </tr>
         ${c.calculada && c.formula_coluna ? `
         <tr>
-          <td colspan="3" style="background:var(--code-bg);padding:.5rem .875rem;border-bottom:1px solid var(--brd)">
-            <code style="color:var(--code-tx);font-size:.75rem;white-space:pre-wrap;display:block;font-family:'SF Mono',Consolas,monospace">${esc(c.formula_coluna)}</code>
+          <td colspan="3" style="background:#0f172a;padding:.75rem 1rem;border-bottom:1px solid var(--brd)">
+            <code style="background:transparent;padding:0;color:#e2e8f0;font-size:.75rem;white-space:pre-wrap;display:block;font-family:'SF Mono','Cascadia Code',Consolas,monospace;line-height:1.7">${esc(c.formula_coluna)}</code>
           </td>
         </tr>` : ''}`).join('')}
       </tbody>
