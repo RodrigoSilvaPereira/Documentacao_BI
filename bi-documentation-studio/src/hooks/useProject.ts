@@ -11,13 +11,17 @@ export function useProject() {
 
   const salvar = useCallback(async () => {
     if (!projetoAberto || !documento) return;
-    await projectService.salvarProjeto(projetoAberto.caminho, documento);
 
-    // Atualiza imediatamente o nome exibido em Projetos Recentes,
-    // refletindo qualquer alteração no título do relatório.
+    // Passa biPlatform para que o V2 seja salvo com a plataforma correta
+    await projectService.salvarProjeto(
+      projetoAberto.caminho,
+      documento,
+      projetoAberto.biPlatform,  // ← novo
+    );
+
     const nome = documento.projeto.titulo_relatorio.trim() || projetoAberto.nome;
     adicionarProjetoRecente({
-      caminho: projetoAberto.caminho,
+      caminho:      projetoAberto.caminho,
       nome,
       ultimoAcesso: new Date().toISOString(),
     });
