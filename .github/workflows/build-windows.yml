@@ -2,7 +2,7 @@ name: Build Tauri Windows (.exe)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "feat/platform-migration" ]
   workflow_dispatch:
 
 jobs:
