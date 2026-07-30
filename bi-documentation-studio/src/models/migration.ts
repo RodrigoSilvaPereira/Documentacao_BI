@@ -77,28 +77,38 @@ export function migrarV1paraV2(v1: Documentacao): DocumentacaoV2 {
 // ─── Conversão V2 → V1-compatível (para o store) ─────────────────────────────
 
 /**
- * Converte um DocumentacaoV2 Power BI para o formato V1 que o store
- * e todos os componentes existentes consomem.
+ * Converte um DocumentacaoV2 para o formato V1 que o store consome.
  *
- * Isso permite que toda a camada de UI continue sem mudanças durante Phase 0.
- * Em Phase 1, quando o store for atualizado para V2, esta função será removida.
+ * Para projetos Looker Studio em Phase 1: retorna documento mínimo com
+ * campos comuns preenchidos e arrays PBI vazios. Os dados LS permanecem
+ * apenas no JSON em disco — o store LS-nativo vem na Phase 2.
  */
 export function v2ParaV1Compativel(v2: DocumentacaoV2): Documentacao {
-  if (v2.bi_platform !== 'POWER_BI') {
-    throw new Error(
-      'v2ParaV1Compativel só suporta projetos Power BI. ' +
-      'Suporte ao Looker Studio está previsto para Phase 2.',
-    );
-  }
-  return {
-    versao_schema:   '1.0.0',
+  const base = {
+    versao_schema:   '1.0.0' as const,
     projeto:         v2.projeto,
     glossario:       v2.glossario,
-    metadados:       {
+    metadados: {
       documentado_por: v2.metadados.documentado_por,
       criado_em:       v2.metadados.criado_em,
       ultima_revisao:  v2.metadados.ultima_revisao,
     },
+  };
+
+  if (v2.bi_platform === 'LOOKER_STUDIO') {
+    // Phase 1: apenas campos comuns no store. LS-data fica só no disco.
+    return {
+      ...base,
+      kpis:            [],
+      queries:         [],
+      relacionamentos: [],
+      medidas_dax:     [],
+      paginas:         [],
+    };
+  }
+
+  return {
+    ...base,
     kpis:            v2.power_bi_data?.kpis            ?? [],
     queries:         v2.power_bi_data?.queries          ?? [],
     relacionamentos: v2.power_bi_data?.relacionamentos  ?? [],

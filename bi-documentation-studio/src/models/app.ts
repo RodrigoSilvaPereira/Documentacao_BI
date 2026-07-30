@@ -1,13 +1,28 @@
 export type SecaoAtiva =
-  | 'projeto' | 'kpis' | 'queries' | 'relacionamentos'
-  | 'medidas_dax' | 'paginas' | 'glossario' | 'exportar';
+  // Comuns (ambas as plataformas)
+  | 'projeto'
+  | 'glossario'
+  | 'exportar'
+  // Power BI
+  | 'kpis'
+  | 'queries'
+  | 'relacionamentos'
+  | 'medidas_dax'
+  | 'paginas'
+  // Looker Studio
+  | 'ls_dashboard'
+  | 'ls_paginas'
+  | 'ls_componentes'
+  | 'ls_fontes_dados'
+  | 'ls_bigquery'
+  | 'ls_metricas';
 
 export type BiPlatform = 'POWER_BI' | 'LOOKER_STUDIO';
 
 export interface ProjetoAberto {
   caminho:    string;
   nome:       string;
-  biPlatform: BiPlatform;   // ← novo — necessário para salvar no formato correto
+  biPlatform: BiPlatform;
 }
 
 export interface ProjetoRecente {
