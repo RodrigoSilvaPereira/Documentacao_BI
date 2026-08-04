@@ -103,6 +103,70 @@ export const OPCOES_NIVEL_PERMISSAO = [
   { value: 'proprietario', label: 'Proprietário'},
 ];
 
+// ─── Parâmetros ───────────────────────────────────────────────────────────────
+
+export type TipoParametro = 'texto' | 'numero' | 'booleano';
+
+export const OPCOES_TIPO_PARAMETRO = [
+  { value: 'texto',    label: 'Texto'    },
+  { value: 'numero',   label: 'Número'   },
+  { value: 'booleano', label: 'Booleano' },
+];
+
+export interface LSParametro {
+  id:                string;
+  nome:              string;
+  descricao?:        string;
+  tipo:              TipoParametro;
+  valor_padrao?:     string;
+  visivel_viewer?:   boolean;   // se o visualizador pode alterar o valor
+  usado_em:          string[];  // descrição livre de onde é usado (campos, filtros)
+  observacoes?:      string;
+}
+
+// ─── Combinações de Dados ─────────────────────────────────────────────────────
+
+export type TipoJoin =
+  | 'left_outer'
+  | 'right_outer'
+  | 'inner'
+  | 'full_outer'
+  | 'cross';
+
+export const LABELS_TIPO_JOIN: Record<TipoJoin, string> = {
+  left_outer:  'Left Outer Join',
+  right_outer: 'Right Outer Join',
+  inner:       'Inner Join',
+  full_outer:  'Full Outer Join',
+  cross:       'Cross Join',
+};
+
+export const OPCOES_TIPO_JOIN = Object.entries(LABELS_TIPO_JOIN)
+  .map(([value, label]) => ({ value, label }));
+
+export interface LSJoinKey {
+  id:                  string;
+  campo_fonte_a:       string;   // campo da primeira fonte
+  campo_fonte_b:       string;   // campo da segunda fonte (ou seguintes)
+}
+
+export interface LSFonteNaCombinacao {
+  fonte_dados_id: string;   // referência a LSDataSource.id
+  campos_usados:  string[]; // campos selecionados desta fonte
+}
+
+export interface LSCombinacao {
+  id:                  string;
+  nome:                string;
+  descricao?:          string;
+  tipo_join:           TipoJoin;
+  fontes:              LSFonteNaCombinacao[]; // mín. 2 fontes
+  chaves_join:         LSJoinKey[];
+  campos_resultantes:  LSField[];             // campos disponíveis após a combinação
+  componentes_que_usam: string[];             // IDs de LSComponent
+  observacoes?:        string;
+}
+
 // ─── BigQuery ─────────────────────────────────────────────────────────────────
 
 export interface BigQueryColumn {
@@ -328,5 +392,27 @@ export function criarLSDataSourceVazia(): LSDataSource {
     nome:          '',
     tipo_conector: 'bigquery',
     campos:        [],
+  };
+}
+
+export function criarLSParametroVazio(): LSParametro {
+  return {
+    id:            generateId(),
+    nome:          '',
+    tipo:          'texto',
+    visivel_viewer: false,
+    usado_em:      [],
+  };
+}
+
+export function criarLSCombinacaoVazia(): LSCombinacao {
+  return {
+    id:                   generateId(),
+    nome:                 '',
+    tipo_join:            'left_outer',
+    fontes:               [],
+    chaves_join:          [],
+    campos_resultantes:   [],
+    componentes_que_usam: [],
   };
 }

@@ -6,7 +6,7 @@ import type { Documentacao } from '@models/schema';
 import {
   LayoutDashboard, TrendingUp, Database, GitFork,
   Calculator, Layers, BookOpen, Download,
-  Search, X, Monitor, LayoutGrid, Cloud,
+  Search, X, Monitor, LayoutGrid, Cloud, Combine, SlidersHorizontal,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@utils/cn';
@@ -28,14 +28,16 @@ const NAV_POWER_BI: NavItem[] = [
 ];
 
 const NAV_LOOKER_STUDIO: NavItem[] = [
-  { id: 'projeto',          label: 'Projeto',          icon: LayoutDashboard },
-  { id: 'ls_dashboard',     label: 'Dashboard',        icon: Monitor         },
-  { id: 'ls_paginas',       label: 'Páginas',          icon: Layers          },
-  { id: 'ls_componentes',   label: 'Componentes',      icon: LayoutGrid      },
-  { id: 'ls_fontes_dados',  label: 'Fontes de Dados',  icon: Database        },
-  { id: 'ls_bigquery',      label: 'BigQuery',         icon: Cloud           },
-  { id: 'ls_metricas',      label: 'Métricas',         icon: TrendingUp      },
-  { id: 'glossario',        label: 'Glossário',        icon: BookOpen        },
+  { id: 'projeto',          label: 'Projeto',          icon: LayoutDashboard  },
+  { id: 'ls_bigquery',      label: 'BigQuery',         icon: Cloud            },
+  { id: 'ls_fontes_dados',  label: 'Fontes de Dados',  icon: Database         },
+  { id: 'ls_combinacoes',   label: 'Combinações',      icon: Combine          },
+  { id: 'ls_parametros',    label: 'Parâmetros',       icon: SlidersHorizontal},
+  { id: 'ls_metricas',      label: 'Métricas',         icon: TrendingUp       },
+  { id: 'ls_dashboard',     label: 'Dashboard',        icon: Monitor          },
+  { id: 'ls_paginas',       label: 'Páginas',          icon: Layers           },
+  { id: 'ls_componentes',   label: 'Componentes',      icon: LayoutGrid       },
+  { id: 'glossario',        label: 'Glossário',        icon: BookOpen         },
 ];
 
 const NAV_EXPORTAR: NavItem = { id: 'exportar', label: 'Exportar', icon: Download };

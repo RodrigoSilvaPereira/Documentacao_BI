@@ -31,7 +31,7 @@ export function ProjetoSection() {
       <SectionHeader
         icon={<LayoutDashboard size={20} />}
         title="Projeto"
-        description="Informações gerais do relatório Power BI."
+        description="Informações gerais do relatório"
       />
 
       {/* ── Card 1: Identificação ─────────────────────────────── */}

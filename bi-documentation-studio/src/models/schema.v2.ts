@@ -5,6 +5,8 @@ import type {
 import type {
   LSDashboard, LSPage, LSComponent, LSDataSource,
   LSMetric, BigQuerySource, LSSecurityConfig,
+  LSParametro,
+  LSCombinacao,
 } from './schema.lookerstudio';
 import {
   criarLSDashboardVazio, criarLSSecurityVazia,
@@ -29,6 +31,8 @@ export interface LookerStudioData {
   paginas:          LSPage[];
   componentes:      LSComponent[];
   fontes_dados:     LSDataSource[];
+  combinacoes:      LSCombinacao[];   // ← novo
+  parametros:       LSParametro[];   // ← novo
   metricas:         LSMetric[];
   bigquery_sources: BigQuerySource[];
   seguranca:        LSSecurityConfig;
@@ -107,6 +111,8 @@ export function criarDocumentacaoV2LookerStudio(): DocumentacaoV2 {
       paginas:          [],
       componentes:      [],
       fontes_dados:     [],
+      combinacoes:      [],   // ← novo
+      parametros:       [],   // ← novo
       metricas:         [],
       bigquery_sources: [],
       seguranca:        criarLSSecurityVazia(),
