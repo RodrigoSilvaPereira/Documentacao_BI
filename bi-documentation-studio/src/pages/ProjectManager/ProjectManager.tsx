@@ -13,6 +13,8 @@ import { Modal } from '@components/common/Modal';
 import { Button } from '@components/common/Button';
 import type { ProjetoRecente, BiPlatform } from '@models/app';
 import type { Documentacao } from '@models/schema';
+import { useLSStore } from '@store/useLSStore';
+import type { LookerStudioData } from '@models/schema.lookerstudio';
 
 interface MigracaoPendente {
   caminho:     string;
@@ -37,9 +39,23 @@ export function ProjectManager() {
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
-  function entrarNoProjeto(caminho: string, documento: Documentacao, biPlatform: BiPlatform) {
+  // Dentro do componente, adicionar:
+  const { setLSData, resetLSData } = useLSStore();
+
+  // Substituir entrarNoProjeto:
+  function entrarNoProjeto(
+    caminho: string,
+    documento: Documentacao,
+    biPlatform: BiPlatform,
+    lsData?: LookerStudioData,
+  ) {
     const nome = documento.projeto.titulo_relatorio.trim() ||
-                 caminho.split(/[\\/]/).pop() || 'Projeto';
+                caminho.split(/[\\/]/).pop() || 'Projeto';
+
+    // Limpa dados LS anteriores antes de abrir novo projeto
+    resetLSData();
+    if (lsData) setLSData(lsData);
+
     setDocumento(documento);
     abrirProjeto({ caminho, nome, biPlatform });
     adicionarProjetoRecente({ caminho, nome, ultimoAcesso: new Date().toISOString() });
@@ -99,7 +115,7 @@ export function ProjectManager() {
         return;
       }
 
-      entrarNoProjeto(caminho, resultado.documento, resultado.biPlatform);
+      entrarNoProjeto(caminho, resultado.documento, resultado.biPlatform, resultado.lsData);
     } catch (err) {
       setErroBanner(String(err));
     }

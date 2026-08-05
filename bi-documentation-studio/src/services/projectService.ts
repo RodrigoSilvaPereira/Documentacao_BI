@@ -2,29 +2,32 @@ import {
   readTextFile, writeTextFile, mkdir, copyFile, exists,
 } from '@tauri-apps/plugin-fs';
 import { join } from '@tauri-apps/api/path';
-
-import { criarDocumentacaoVazia } from '@models/schema';
 import {
-  detectarVersao,
-  migrarV1paraV2,
-  v2ParaV1Compativel,
-  v1CompativelParaV2,
+  detectarVersao, migrarV1paraV2,
+  v2ParaV1Compativel, v1CompativelParaV2,
 } from '@models/migration';
 import {
-  criarDocumentacaoV2PowerBI,
-  criarDocumentacaoV2LookerStudio,
+  criarDocumentacaoV2PowerBI, criarDocumentacaoV2LookerStudio,
 } from '@models/schema.v2';
-
 import type { Documentacao } from '@models/schema';
 import type { DocumentacaoV2, BiPlatform } from '@models/schema.v2';
+import type { LookerStudioData } from '@models/schema.lookerstudio';
 
 // ─── Tipos de resultado ───────────────────────────────────────────────────────
 
 export type ResultadoAbertura =
-  | { tipo: 'ok';              documento: Documentacao; biPlatform: BiPlatform }
-  | { tipo: 'requer_migracao'; documentoV1: Documentacao };
+  | {
+      tipo:       'ok';
+      documento:  Documentacao;
+      biPlatform: BiPlatform;
+      lsData?:    LookerStudioData;   // presente apenas para LOOKER_STUDIO
+    }
+  | {
+      tipo:        'requer_migracao';
+      documentoV1: Documentacao;
+    };
 
-// ─── Helpers internos ─────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 async function criarEstruturaPastas(pastaProjeto: string): Promise<void> {
   await mkdir(pastaProjeto,                                   { recursive: true });
@@ -49,20 +52,16 @@ export const projectService = {
     biPlatform: BiPlatform = 'POWER_BI',
   ): Promise<Documentacao> {
     await criarEstruturaPastas(pastaProjeto);
-
     const v2 = biPlatform === 'LOOKER_STUDIO'
       ? criarDocumentacaoV2LookerStudio()
       : criarDocumentacaoV2PowerBI();
-
     const caminho = await join(pastaProjeto, 'documentacao.json');
     await salvarJson(caminho, v2);
-
     return v2ParaV1Compativel(v2);
   },
 
   async abrirProjeto(caminho: string): Promise<ResultadoAbertura> {
     const arquivoJson = await join(caminho, 'documentacao.json');
-
     if (!(await exists(arquivoJson))) {
       throw new Error(
         'Nenhum arquivo documentacao.json encontrado nesta pasta. ' +
@@ -79,6 +78,7 @@ export const projectService = {
         tipo:       'ok',
         documento:  v2ParaV1Compativel(v2),
         biPlatform: v2.bi_platform,
+        lsData:     v2.looker_studio_data,
       };
     }
 
@@ -101,12 +101,9 @@ export const projectService = {
   ): Promise<Documentacao> {
     const arquivoJson = await join(pastaProjeto, 'documentacao.json');
     const backupPath  = await join(pastaProjeto, 'documentacao.v1.backup.json');
-
     await copyFile(arquivoJson, backupPath);
-
     const v2 = migrarV1paraV2(documentoV1);
     await salvarJson(arquivoJson, v2);
-
     return v2ParaV1Compativel(v2);
   },
 
@@ -114,12 +111,12 @@ export const projectService = {
     pastaProjeto: string,
     doc:          Documentacao,
     biPlatform:   BiPlatform = 'POWER_BI',
+    lsData?:      LookerStudioData,
   ): Promise<void> {
     const caminho = await join(pastaProjeto, 'documentacao.json');
 
     if (biPlatform === 'LOOKER_STUDIO') {
-      // Phase 1: lê o JSON atual e atualiza apenas campos comuns.
-      // Isso preserva looker_studio_data que ainda não está no store.
+      // Lê o JSON atual e atualiza campos comuns + lsData
       const jsonAtual = await lerJson(caminho) as DocumentacaoV2;
       const v2Atualizado: DocumentacaoV2 = {
         ...jsonAtual,
@@ -130,6 +127,7 @@ export const projectService = {
           documentado_por: doc.metadados.documentado_por,
           ultima_revisao:  doc.metadados.ultima_revisao,
         },
+        looker_studio_data: lsData ?? jsonAtual.looker_studio_data,
       };
       await salvarJson(caminho, v2Atualizado);
       return;

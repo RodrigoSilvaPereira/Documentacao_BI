@@ -345,6 +345,20 @@ export interface LSSecurityConfig {
   observacoes?:                 string;
 }
 
+// ─── Agregado de dados do Looker Studio ──────────────────────────────────────
+
+export interface LookerStudioData {
+  dashboard:        LSDashboard;
+  paginas:          LSPage[];
+  componentes:      LSComponent[];
+  fontes_dados:     LSDataSource[];
+  combinacoes:      LSCombinacao[];
+  parametros:       LSParametro[];
+  metricas:         LSMetric[];
+  bigquery_sources: BigQuerySource[];
+  seguranca:        LSSecurityConfig;
+}
+
 // ─── Factories ────────────────────────────────────────────────────────────────
 
 export function criarLSDashboardVazio(): LSDashboard {

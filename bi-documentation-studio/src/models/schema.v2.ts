@@ -2,15 +2,13 @@ import type { TermoGlossario, MetadadosV2, FonteDados } from './schema.common';
 import type {
   KPI, Query, Relacionamento, MedidaDAX, Pagina, Projeto,
 } from './schema';
-import type {
-  LSDashboard, LSPage, LSComponent, LSDataSource,
-  LSMetric, BigQuerySource, LSSecurityConfig,
-  LSParametro,
-  LSCombinacao,
-} from './schema.lookerstudio';
+import type { LookerStudioData } from './schema.lookerstudio';
 import {
   criarLSDashboardVazio, criarLSSecurityVazia,
 } from './schema.lookerstudio';
+
+// Mantém compatibilidade com imports antigos feitos a partir de schema.v2.
+export type { LookerStudioData } from './schema.lookerstudio';
 
 // ─── Plataforma ───────────────────────────────────────────────────────────────
 
@@ -26,17 +24,6 @@ export interface PowerBIData {
   paginas:         Pagina[];
 }
 
-export interface LookerStudioData {
-  dashboard:        LSDashboard;
-  paginas:          LSPage[];
-  componentes:      LSComponent[];
-  fontes_dados:     LSDataSource[];
-  combinacoes:      LSCombinacao[];   // ← novo
-  parametros:       LSParametro[];   // ← novo
-  metricas:         LSMetric[];
-  bigquery_sources: BigQuerySource[];
-  seguranca:        LSSecurityConfig;
-}
 
 // ─── Schema raiz V2 ───────────────────────────────────────────────────────────
 

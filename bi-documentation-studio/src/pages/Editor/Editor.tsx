@@ -15,6 +15,8 @@ import {
   Monitor, Layers, LayoutGrid,
   Database, Cloud, TrendingUp, Combine, SlidersHorizontal,
 } from 'lucide-react';
+import { BigQuerySection }     from '@components/sections/lookerstudio/bigquery/BigQuerySection';
+import { FontesDadosSection }  from '@components/sections/lookerstudio/fontes/FontesDadosSection';
 
 // ── Seções Power BI (igual à V1) ─────────────────────────────────────────────
 
@@ -39,22 +41,10 @@ const SECOES_LOOKER_STUDIO: Partial<Record<SecaoAtiva, ReactElement>> = {
   exportar:  <ExportarSection />,
 
   // 1. BigQuery — dado bruto, sem referências
-  ls_bigquery: (
-    <EmBreveSection
-      icone={<Cloud size={28} className="text-green-600" />}
-      titulo="BigQuery"
-      descricao="Documente as tabelas e views do BigQuery que alimentam este dashboard — colunas, tipos, métricas, dimensões e responsáveis."
-    />
-  ),
+  ls_bigquery:     <BigQuerySection />,
 
   // 2. Fontes de Dados — referencia BigQuery
-  ls_fontes_dados: (
-    <EmBreveSection
-      icone={<Database size={28} className="text-green-600" />}
-      titulo="Fontes de Dados"
-      descricao="Documente os conectores utilizados no relatório — tipo de conector, projeto BigQuery, dataset, tabela ou view e campos disponíveis."
-    />
-  ),
+  ls_fontes_dados: <FontesDadosSection />,
 
   // 3. Combinações — referencia múltiplas fontes
   ls_combinacoes: (
