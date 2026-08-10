@@ -17,6 +17,9 @@ import {
 } from 'lucide-react';
 import { BigQuerySection }     from '@components/sections/lookerstudio/bigquery/BigQuerySection';
 import { FontesDadosSection }  from '@components/sections/lookerstudio/fontes/FontesDadosSection';
+import { CombinacoesSection } from '@components/sections/lookerstudio/combinacoes/CombinacoesSection';
+import { ParametrosSection }  from '@components/sections/lookerstudio/parametros/ParametrosSection';
+
 
 // ── Seções Power BI (igual à V1) ─────────────────────────────────────────────
 
@@ -47,22 +50,10 @@ const SECOES_LOOKER_STUDIO: Partial<Record<SecaoAtiva, ReactElement>> = {
   ls_fontes_dados: <FontesDadosSection />,
 
   // 3. Combinações — referencia múltiplas fontes
-  ls_combinacoes: (
-    <EmBreveSection
-      icone={<Combine size={28} className="text-green-600" />}
-      titulo="Combinações de Dados"
-      descricao="Documente as combinações entre fontes de dados — tipo de join, chaves de união e campos resultantes disponíveis para os componentes."
-    />
-  ),
+  ls_combinacoes: <CombinacoesSection />,
 
   // 4. Parâmetros — independente, usado em campos e filtros
-  ls_parametros: (
-    <EmBreveSection
-      icone={<SlidersHorizontal size={28} className="text-green-600" />}
-      titulo="Parâmetros"
-      descricao="Documente os parâmetros configuráveis do relatório — tipo, valor padrão, visibilidade para o visualizador e onde são utilizados."
-    />
-  ),
+  ls_parametros:  <ParametrosSection />,
 
   // 5. Métricas — referencia fontes + combinações
   ls_metricas: (

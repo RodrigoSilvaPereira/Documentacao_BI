@@ -4,6 +4,7 @@ import { generateId } from '@utils/id';
 import { useDocStore } from './useDocStore';
 import type {
   LookerStudioData, BigQuerySource, LSDataSource,
+  LSCombinacao, LSParametro,
 } from '@models/schema.lookerstudio';
 
 interface LSStore {
@@ -23,6 +24,18 @@ interface LSStore {
   atualizarFonteDados:  (id: string, dados: Partial<LSDataSource>) => void;
   removerFonteDados:    (id: string) => void;
   duplicarFonteDados:   (id: string) => void;
+
+  // Combinações
+  adicionarCombinacao:  (combinacao: LSCombinacao) => void;
+  atualizarCombinacao:  (id: string, dados: Partial<LSCombinacao>) => void;
+  removerCombinacao:    (id: string) => void;
+  duplicarCombinacao:   (id: string) => void;
+
+  // Parâmetros
+  adicionarParametro:   (parametro: LSParametro) => void;
+  atualizarParametro:   (id: string, dados: Partial<LSParametro>) => void;
+  removerParametro:     (id: string) => void;
+  duplicarParametro:    (id: string) => void;
 }
 
 // Delega o marcarAlterado para o useDocStore existente —
@@ -98,6 +111,73 @@ export const useLSStore = create<LSStore>()(
         id:     generateId(),
         nome:   `${orig.nome} (cópia)`,
         campos: orig.campos.map((c) => ({ ...c, id: generateId() })),
+      });
+      marcarAlterado();
+    }),
+
+    // ── Combinações ─────────────────────────────────────────────────────────
+    adicionarCombinacao: (combinacao) => set((s) => {
+      if (!s.lsData) return;
+      s.lsData.combinacoes.push(combinacao);
+      marcarAlterado();
+    }),
+
+    atualizarCombinacao: (id, dados) => set((s) => {
+      if (!s.lsData) return;
+      const idx = s.lsData.combinacoes.findIndex((c) => c.id === id);
+      if (idx !== -1) { Object.assign(s.lsData.combinacoes[idx], dados); marcarAlterado(); }
+    }),
+
+    removerCombinacao: (id) => set((s) => {
+      if (!s.lsData) return;
+      s.lsData.combinacoes = s.lsData.combinacoes.filter((c) => c.id !== id);
+      marcarAlterado();
+    }),
+
+    duplicarCombinacao: (id) => set((s) => {
+      if (!s.lsData) return;
+      const orig = s.lsData.combinacoes.find((c) => c.id === id);
+      if (!orig) return;
+      s.lsData.combinacoes.push({
+        ...orig,
+        id:                   generateId(),
+        nome:                 `${orig.nome} (cópia)`,
+        fontes:               orig.fontes.map((f) => ({ ...f })),
+        chaves_join:          orig.chaves_join.map((k) => ({ ...k, id: generateId() })),
+        campos_resultantes:   orig.campos_resultantes.map((c) => ({ ...c, id: generateId() })),
+        componentes_que_usam: [],
+      });
+      marcarAlterado();
+    }),
+
+    // ── Parâmetros ──────────────────────────────────────────────────────────
+    adicionarParametro: (parametro) => set((s) => {
+      if (!s.lsData) return;
+      s.lsData.parametros.push(parametro);
+      marcarAlterado();
+    }),
+
+    atualizarParametro: (id, dados) => set((s) => {
+      if (!s.lsData) return;
+      const idx = s.lsData.parametros.findIndex((p) => p.id === id);
+      if (idx !== -1) { Object.assign(s.lsData.parametros[idx], dados); marcarAlterado(); }
+    }),
+
+    removerParametro: (id) => set((s) => {
+      if (!s.lsData) return;
+      s.lsData.parametros = s.lsData.parametros.filter((p) => p.id !== id);
+      marcarAlterado();
+    }),
+
+    duplicarParametro: (id) => set((s) => {
+      if (!s.lsData) return;
+      const orig = s.lsData.parametros.find((p) => p.id === id);
+      if (!orig) return;
+      s.lsData.parametros.push({
+        ...orig,
+        id:      generateId(),
+        nome:    `${orig.nome} (cópia)`,
+        usado_em: [...orig.usado_em],
       });
       marcarAlterado();
     }),
