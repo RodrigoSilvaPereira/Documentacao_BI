@@ -19,6 +19,8 @@ import { BigQuerySection }     from '@components/sections/lookerstudio/bigquery/
 import { FontesDadosSection }  from '@components/sections/lookerstudio/fontes/FontesDadosSection';
 import { CombinacoesSection } from '@components/sections/lookerstudio/combinacoes/CombinacoesSection';
 import { ParametrosSection }  from '@components/sections/lookerstudio/parametros/ParametrosSection';
+import { MetricasSection } from '@components/sections/lookerstudio/metricas/MetricasSection';
+
 
 
 // ── Seções Power BI (igual à V1) ─────────────────────────────────────────────
@@ -56,13 +58,7 @@ const SECOES_LOOKER_STUDIO: Partial<Record<SecaoAtiva, ReactElement>> = {
   ls_parametros:  <ParametrosSection />,
 
   // 5. Métricas — referencia fontes + combinações
-  ls_metricas: (
-    <EmBreveSection
-      icone={<TrendingUp size={28} className="text-green-600" />}
-      titulo="Métricas"
-      descricao="Documente os indicadores de negócio — fórmula, regra de negócio, unidade, granularidade, validação e responsável."
-    />
-  ),
+  ls_metricas: <MetricasSection />,
 
   // 6. Dashboard — informações gerais
   ls_dashboard: (

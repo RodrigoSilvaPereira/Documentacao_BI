@@ -4,7 +4,7 @@ import { generateId } from '@utils/id';
 import { useDocStore } from './useDocStore';
 import type {
   LookerStudioData, BigQuerySource, LSDataSource,
-  LSCombinacao, LSParametro,
+  LSCombinacao, LSParametro, LSMetric,
 } from '@models/schema.lookerstudio';
 
 interface LSStore {
@@ -36,6 +36,12 @@ interface LSStore {
   atualizarParametro:   (id: string, dados: Partial<LSParametro>) => void;
   removerParametro:     (id: string) => void;
   duplicarParametro:    (id: string) => void;
+
+  // Métricas
+  adicionarMetrica:  (metrica: LSMetric) => void;
+  atualizarMetrica:  (id: string, dados: Partial<LSMetric>) => void;
+  removerMetrica:    (id: string) => void;
+  duplicarMetrica:   (id: string) => void;
 }
 
 // Delega o marcarAlterado para o useDocStore existente —
@@ -178,6 +184,37 @@ export const useLSStore = create<LSStore>()(
         id:      generateId(),
         nome:    `${orig.nome} (cópia)`,
         usado_em: [...orig.usado_em],
+      });
+      marcarAlterado();
+    }),
+
+    // ── Métricas ────────────────────────────────────────────────────────────
+    adicionarMetrica: (metrica) => set((s) => {
+      if (!s.lsData) return;
+      s.lsData.metricas.push(metrica);
+      marcarAlterado();
+    }),
+
+    atualizarMetrica: (id, dados) => set((s) => {
+      if (!s.lsData) return;
+      const idx = s.lsData.metricas.findIndex((m) => m.id === id);
+      if (idx !== -1) { Object.assign(s.lsData.metricas[idx], dados); marcarAlterado(); }
+    }),
+
+    removerMetrica: (id) => set((s) => {
+      if (!s.lsData) return;
+      s.lsData.metricas = s.lsData.metricas.filter((m) => m.id !== id);
+      marcarAlterado();
+    }),
+
+    duplicarMetrica: (id) => set((s) => {
+      if (!s.lsData) return;
+      const orig = s.lsData.metricas.find((m) => m.id === id);
+      if (!orig) return;
+      s.lsData.metricas.push({
+        ...orig,
+        id:   generateId(),
+        nome: `${orig.nome} (cópia)`,
       });
       marcarAlterado();
     }),
