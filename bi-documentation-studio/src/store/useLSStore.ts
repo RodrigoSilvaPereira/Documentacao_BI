@@ -5,6 +5,7 @@ import { useDocStore } from './useDocStore';
 import type {
   LookerStudioData, BigQuerySource, LSDataSource,
   LSCombinacao, LSParametro, LSMetric,
+  LSDashboard, LSSecurityConfig, LSPage,
 } from '@models/schema.lookerstudio';
 
 interface LSStore {
@@ -42,6 +43,17 @@ interface LSStore {
   atualizarMetrica:  (id: string, dados: Partial<LSMetric>) => void;
   removerMetrica:    (id: string) => void;
   duplicarMetrica:   (id: string) => void;
+
+  // Dashboard (entidade única)
+  atualizarDashboard:  (dados: Partial<LSDashboard>) => void;
+  atualizarSeguranca:  (dados: Partial<LSSecurityConfig>) => void;
+
+  // Páginas LS
+  adicionarPaginaLS:   (pagina: LSPage) => void;
+  atualizarPaginaLS:   (id: string, dados: Partial<LSPage>) => void;
+  removerPaginaLS:     (id: string) => void;
+  duplicarPaginaLS:    (id: string) => void;
+  reordenarPaginasLS:  (paginas: LSPage[]) => void;
 }
 
 // Delega o marcarAlterado para o useDocStore existente —
@@ -217,6 +229,62 @@ export const useLSStore = create<LSStore>()(
         nome: `${orig.nome} (cópia)`,
       });
       marcarAlterado();
+      
     }),
+
+    // ── Dashboard ────────────────────────────────────────────────────────────
+    atualizarDashboard: (dados) => set((s) => {
+      if (!s.lsData) return;
+      Object.assign(s.lsData.dashboard, dados);
+      marcarAlterado();
+    }),
+
+    atualizarSeguranca: (dados) => set((s) => {
+      if (!s.lsData) return;
+      Object.assign(s.lsData.seguranca, dados);
+      marcarAlterado();
+    }),
+
+    // ── Páginas LS ───────────────────────────────────────────────────────────
+    adicionarPaginaLS: (pagina) => set((s) => {
+      if (!s.lsData) return;
+      s.lsData.paginas.push(pagina);
+      marcarAlterado();
+    }),
+
+    atualizarPaginaLS: (id, dados) => set((s) => {
+      if (!s.lsData) return;
+      const idx = s.lsData.paginas.findIndex((p) => p.id === id);
+      if (idx !== -1) { Object.assign(s.lsData.paginas[idx], dados); marcarAlterado(); }
+    }),
+
+    removerPaginaLS: (id) => set((s) => {
+      if (!s.lsData) return;
+      s.lsData.paginas = s.lsData.paginas.filter((p) => p.id !== id);
+      marcarAlterado();
+    }),
+
+    duplicarPaginaLS: (id) => set((s) => {
+      if (!s.lsData) return;
+      const orig = s.lsData.paginas.find((p) => p.id === id);
+      if (!orig) return;
+      const maxOrdem = Math.max(0, ...s.lsData.paginas.map((p) => p.ordem ?? 0));
+      s.lsData.paginas.push({
+        ...orig,
+        id:              generateId(),
+        titulo:          `${orig.titulo} (cópia)`,
+        captura:         null,
+        filtros_globais: [...orig.filtros_globais],
+        ordem:           maxOrdem + 1,
+      });
+      marcarAlterado();
+    }),
+
+    reordenarPaginasLS: (paginas) => set((s) => {
+      if (!s.lsData) return;
+      s.lsData.paginas = paginas;
+      marcarAlterado();
+    }),
+    
   }))
 );

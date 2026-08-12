@@ -20,6 +20,8 @@ import { FontesDadosSection }  from '@components/sections/lookerstudio/fontes/Fo
 import { CombinacoesSection } from '@components/sections/lookerstudio/combinacoes/CombinacoesSection';
 import { ParametrosSection }  from '@components/sections/lookerstudio/parametros/ParametrosSection';
 import { MetricasSection } from '@components/sections/lookerstudio/metricas/MetricasSection';
+import { DashboardSection }  from '@components/sections/lookerstudio/dashboard/DashboardSection';
+import { PaginasLSSection }  from '@components/sections/lookerstudio/paginas/PaginasLSSection';
 
 
 
@@ -61,22 +63,10 @@ const SECOES_LOOKER_STUDIO: Partial<Record<SecaoAtiva, ReactElement>> = {
   ls_metricas: <MetricasSection />,
 
   // 6. Dashboard — informações gerais
-  ls_dashboard: (
-    <EmBreveSection
-      icone={<Monitor size={28} className="text-green-600" />}
-      titulo="Dashboard"
-      descricao="Documente a identificação do relatório — objetivo, link, área, responsáveis, status, versão e configurações de segurança."
-    />
-  ),
+  ls_dashboard: <DashboardSection />,
 
   // 7. Páginas — parte do dashboard
-  ls_paginas: (
-    <EmBreveSection
-      icone={<Layers size={28} className="text-green-600" />}
-      titulo="Páginas"
-      descricao="Documente as páginas do relatório — título, objetivo, ordem, filtros globais e capturas de tela."
-    />
-  ),
+  ls_paginas:   <PaginasLSSection />,
 
   // 8. Componentes — referencia tudo acima
   ls_componentes: (
