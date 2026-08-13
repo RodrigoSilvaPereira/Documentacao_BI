@@ -114,7 +114,12 @@ export function ComponentesSection() {
         />
       )}
 
-      ls_componentes: <ComponentesSection />,
+      <ComponenteForm
+        aberto={modalAberto}
+        componente={componenteEditando}
+        onSave={handleSave}
+        onClose={() => { setModalAberto(false); setComponenteEditando(undefined); }}
+      />
 
       <ConfirmDialog
         open={confirmDeleteId !== null}
