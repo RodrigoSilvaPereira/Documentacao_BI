@@ -5,9 +5,8 @@ import { useDocStore } from './useDocStore';
 import type {
   LookerStudioData, BigQuerySource, LSDataSource,
   LSCombinacao, LSParametro, LSMetric,
-  LSDashboard, LSSecurityConfig, LSPage,
+  LSDashboard, LSSecurityConfig, LSPage, LSComponent,
 } from '@models/schema.lookerstudio';
-
 interface LSStore {
   lsData: LookerStudioData | null;
 
@@ -54,6 +53,12 @@ interface LSStore {
   removerPaginaLS:     (id: string) => void;
   duplicarPaginaLS:    (id: string) => void;
   reordenarPaginasLS:  (paginas: LSPage[]) => void;
+
+  // Componentes Visuais
+  adicionarComponente:  (componente: LSComponent) => void;
+  atualizarComponente:  (id: string, dados: Partial<LSComponent>) => void;
+  removerComponente:    (id: string) => void;
+  duplicarComponente:   (id: string) => void;
 }
 
 // Delega o marcarAlterado para o useDocStore existente —
@@ -283,6 +288,43 @@ export const useLSStore = create<LSStore>()(
     reordenarPaginasLS: (paginas) => set((s) => {
       if (!s.lsData) return;
       s.lsData.paginas = paginas;
+      marcarAlterado();
+    }),
+
+    // ── Componentes Visuais ──────────────────────────────────────────────────
+    adicionarComponente: (componente) => set((s) => {
+      if (!s.lsData) return;
+      s.lsData.componentes.push(componente);
+      marcarAlterado();
+    }),
+
+    atualizarComponente: (id, dados) => set((s) => {
+      if (!s.lsData) return;
+      const idx = s.lsData.componentes.findIndex((c) => c.id === id);
+      if (idx !== -1) { Object.assign(s.lsData.componentes[idx], dados); marcarAlterado(); }
+    }),
+
+    removerComponente: (id) => set((s) => {
+      if (!s.lsData) return;
+      s.lsData.componentes = s.lsData.componentes.filter((c) => c.id !== id);
+      marcarAlterado();
+    }),
+
+    duplicarComponente: (id) => set((s) => {
+      if (!s.lsData) return;
+      const orig = s.lsData.componentes.find((c) => c.id === id);
+      if (!orig) return;
+      s.lsData.componentes.push({
+        ...orig,
+        id:               generateId(),
+        nome:             `${orig.nome} (cópia)`,
+        captura:          null,
+        fontes_dados_ids: [...orig.fontes_dados_ids],
+        dimensoes:        [...orig.dimensoes],
+        metricas:         [...orig.metricas],
+        filtros_aplicados:[...orig.filtros_aplicados],
+        campos_calculados: orig.campos_calculados.map((c) => ({ ...c, id: generateId() })),
+      });
       marcarAlterado();
     }),
     
