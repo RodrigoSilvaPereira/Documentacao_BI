@@ -22,6 +22,7 @@ import { ParametrosSection }  from '@components/sections/lookerstudio/parametros
 import { MetricasSection } from '@components/sections/lookerstudio/metricas/MetricasSection';
 import { DashboardSection }  from '@components/sections/lookerstudio/dashboard/DashboardSection';
 import { PaginasLSSection }  from '@components/sections/lookerstudio/paginas/PaginasLSSection';
+import { ComponentesSection } from '@components/sections/lookerstudio/componentes/ComponentesSection';
 
 
 
@@ -69,13 +70,7 @@ const SECOES_LOOKER_STUDIO: Partial<Record<SecaoAtiva, ReactElement>> = {
   ls_paginas:   <PaginasLSSection />,
 
   // 8. Componentes — referencia tudo acima
-  ls_componentes: (
-    <EmBreveSection
-      icone={<LayoutGrid size={28} className="text-green-600" />}
-      titulo="Componentes Visuais"
-      descricao="Documente cada gráfico, tabela e scorecard — tipo, dimensões, métricas, filtros, fonte de dados, parâmetros e comportamento esperado."
-    />
-  ),
+  ls_componentes: <ComponentesSection />,
 };
 
 // ── Editor ────────────────────────────────────────────────────────────────────
