@@ -668,3 +668,7 @@ ${content}
 </body>
 </html>`;
 }
+
+// Compartilhados com o gerador Looker Studio
+export const GENERATOR_CSS = CSS;
+export const GENERATOR_JS  = JS;
