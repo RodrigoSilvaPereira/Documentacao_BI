@@ -50,7 +50,8 @@ const LS_THEME_OVERRIDE = `
 // ─── Sidebar LS ───────────────────────────────────────────────────────────────
 
 function buildSidebarLS(doc: Documentacao, lsData: LookerStudioData): string {
-  const { bigquery_sources, fontes_dados, combinacoes, parametros, metricas, paginas, componentes, glossario, dashboard } = lsData;
+  const { bigquery_sources, fontes_dados, combinacoes, parametros, metricas, paginas, componentes, dashboard } = lsData;
+  const { glossario } = doc;
   const paginasOrdenadas = [...paginas].sort((a, b) => (a.ordem ?? 999) - (b.ordem ?? 999));
 
   const bqLinks = bigquery_sources.map((b) =>
@@ -125,7 +126,8 @@ function buildSidebarLS(doc: Documentacao, lsData: LookerStudioData): string {
 
 // ─── Stats ────────────────────────────────────────────────────────────────────
 
-function buildStatsLS(lsData: LookerStudioData): string {
+function buildStatsLS(doc: Documentacao, lsData: LookerStudioData): string {
+  const { glossario } = doc;
   const items = [
     { l: 'BigQuery', n: lsData.bigquery_sources.length },
     { l: 'Fontes',   n: lsData.fontes_dados.length     },
@@ -134,7 +136,7 @@ function buildStatsLS(lsData: LookerStudioData): string {
     { l: 'Métricas', n: lsData.metricas.length          },
     { l: 'Páginas',  n: lsData.paginas.length           },
     { l: 'Componentes',n: lsData.componentes.length     },
-    { l: 'Glossário',n: lsData.glossario?.length ?? 0  },
+    { l: 'Glossário',n: glossario.length                 },
   ];
   return `<div class="stats">
   ${items.map((i) => `<div class="stat"><div class="stat-n">${i.n}</div><div class="stat-l">${i.l}</div></div>`).join('')}
@@ -531,7 +533,7 @@ export function gerarHtmlLookerStudio(
       <h1 class="doc-title">${esc(titulo)}</h1>
       <p class="doc-meta">Documentação técnica gerada por <strong>BI Documentation Studio</strong> · Looker Studio · ${dataExport}</p>
     </div>`,
-    buildStatsLS(lsData),
+    buildStatsLS(doc, lsData),
     buildProjetoLS(doc),
     buildDashboardLS(lsData),
     buildBigQueryLS(lsData, imageMap),
