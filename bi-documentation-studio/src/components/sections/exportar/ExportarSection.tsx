@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Download, FileText, Globe, CheckCircle, AlertCircle } from 'lucide-react';
 import { useDocStore } from '@store/useDocStore';
 import { useAppStore } from '@store/useAppStore';
+import { useLSStore } from '@store/useLSStore';
 import { SectionHeader } from '@components/layout/SectionHeader';
 import { Card } from '@components/common/Card';
 import { Button } from '@components/common/Button';
@@ -13,6 +14,10 @@ type ExportResult = { tipo: 'sucesso' | 'erro'; mensagem: string } | null;
 export function ExportarSection() {
   const documento     = useDocStore((s) => s.documento);
   const projetoAberto = useAppStore((s) => s.projetoAberto);
+  const lsData        = useLSStore((s) => s.lsData);
+
+  const biPlatform = projetoAberto?.biPlatform ?? 'POWER_BI';
+  const isLS       = biPlatform === 'LOOKER_STUDIO';
 
   const [exportandoMd,   setExportandoMd]   = useState(false);
   const [exportandoHtml, setExportandoHtml] = useState(false);
@@ -20,27 +25,32 @@ export function ExportarSection() {
 
   if (!documento) return null;
 
-  const stats = useMemo(() => ({
-    kpis:            documento.kpis.length,
-    queries:         documento.queries.length,
-    relacionamentos: documento.relacionamentos.length,
-    medidas:         documento.medidas_dax.length,
-    paginas:         documento.paginas.length,
-    visuais:         documento.paginas.reduce((s, p) => s + p.visuais.length, 0),
-    filtros:         documento.paginas.reduce((s, p) => s + p.filtros.length, 0),
-    glossario:       documento.glossario.length,
-  }), [documento]);
-
-  const STATS_GRID = [
-    { label: 'KPIs',            value: stats.kpis            },
-    { label: 'Queries',         value: stats.queries          },
-    { label: 'Relacionamentos', value: stats.relacionamentos  },
-    { label: 'Medidas DAX',     value: stats.medidas          },
-    { label: 'Páginas',         value: stats.paginas          },
-    { label: 'Visuais',         value: stats.visuais          },
-    { label: 'Filtros',         value: stats.filtros          },
-    { label: 'Glossário',       value: stats.glossario        },
-  ];
+  const stats = useMemo(() => {
+    if (isLS && lsData) {
+      return [
+        { label: 'BigQuery',    value: lsData.bigquery_sources.length },
+        { label: 'Fontes',      value: lsData.fontes_dados.length     },
+        { label: 'Combinações', value: lsData.combinacoes.length      },
+        { label: 'Parâmetros',  value: lsData.parametros.length       },
+        { label: 'Métricas',    value: lsData.metricas.length          },
+        { label: 'Páginas',     value: lsData.paginas.length           },
+        { label: 'Componentes', value: lsData.componentes.length       },
+        { label: 'Glossário',   value: documento.glossario.length      },
+      ];
+    }
+    const visuais = documento.paginas.reduce((s, p) => s + p.visuais.length, 0);
+    const filtros = documento.paginas.reduce((s, p) => s + p.filtros.length, 0);
+    return [
+      { label: 'KPIs',            value: documento.kpis.length            },
+      { label: 'Queries',         value: documento.queries.length          },
+      { label: 'Relacionamentos', value: documento.relacionamentos.length  },
+      { label: 'Medidas DAX',     value: documento.medidas_dax.length      },
+      { label: 'Páginas',         value: documento.paginas.length          },
+      { label: 'Visuais',         value: visuais                           },
+      { label: 'Filtros',         value: filtros                           },
+      { label: 'Glossário',       value: documento.glossario.length        },
+    ];
+  }, [documento, lsData, isLS]);
 
   function mensagemErro(err: unknown): string {
     const msg = String(err);
@@ -55,7 +65,10 @@ export function ExportarSection() {
     setExportandoMd(true);
     setResultado(null);
     try {
-      await exportService.exportarMarkdown(projetoAberto.caminho, documento);
+      await exportService.exportarMarkdown(
+        projetoAberto.caminho, documento,
+        biPlatform, lsData ?? undefined,
+      );
       setResultado({
         tipo: 'sucesso',
         mensagem: 'README.md gerado com sucesso! Snapshot salvo em exports/.',
@@ -72,11 +85,13 @@ export function ExportarSection() {
     setExportandoHtml(true);
     setResultado(null);
     try {
-      await exportService.exportarHtml(projetoAberto.caminho, documento);
+      await exportService.exportarHtml(
+        projetoAberto.caminho, documento,
+        biPlatform, lsData ?? undefined,
+      );
       setResultado({
         tipo: 'sucesso',
-        mensagem:
-          'README.html gerado com sucesso! Abra o arquivo em qualquer navegador e use Ctrl+P → "Salvar como PDF" para gerar o PDF.',
+        mensagem: 'README.html gerado com sucesso! Abra no navegador e use Ctrl+P → "Salvar como PDF" para gerar o PDF.',
       });
     } catch (err) {
       setResultado({ tipo: 'erro', mensagem: mensagemErro(err) });
@@ -86,6 +101,9 @@ export function ExportarSection() {
   }
 
   const qualquerExportando = exportandoMd || exportandoHtml;
+  const tituloProjeto = isLS
+    ? (lsData?.dashboard.nome || documento.projeto.titulo_relatorio || 'Projeto sem título')
+    : (documento.projeto.titulo_relatorio || 'Projeto sem título');
 
   return (
     <div className="p-8 max-w-3xl mx-auto pb-16">
@@ -97,11 +115,14 @@ export function ExportarSection() {
 
       {/* Resumo */}
       <Card className="mb-6">
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
-          Resumo — {documento.projeto.titulo_relatorio || 'Projeto sem título'}
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
+          Resumo — {tituloProjeto}
+        </p>
+        <p className="text-xs text-slate-400 mb-4">
+          {isLS ? 'Looker Studio' : 'Power BI'}
         </p>
         <div className="grid grid-cols-4 gap-2">
-          {STATS_GRID.map(({ label, value }) => (
+          {stats.map(({ label, value }) => (
             <div key={label} className="text-center p-3 bg-slate-50 rounded-lg">
               <p className="text-xl font-bold text-slate-800 leading-none">{value}</p>
               <p className="text-xs text-slate-500 mt-1.5">{label}</p>
@@ -131,9 +152,7 @@ export function ExportarSection() {
             Compatível com GitHub, Notion e Confluence.
           </p>
           <Button
-            variant="primary"
-            size="md"
-            fullWidth
+            variant="primary" size="md" fullWidth
             loading={exportandoMd}
             disabled={!projetoAberto || qualquerExportando}
             onClick={handleExportarMarkdown}
@@ -145,8 +164,8 @@ export function ExportarSection() {
         {/* HTML / PDF */}
         <div className="flex flex-col gap-4 p-5 bg-white border border-slate-200 rounded-xl hover:border-slate-300 transition-colors">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-blue-50 rounded-lg">
-              <Globe size={18} className="text-brand-600" />
+            <div className={cn('p-2.5 rounded-lg', isLS ? 'bg-green-50' : 'bg-blue-50')}>
+              <Globe size={18} className={isLS ? 'text-green-600' : 'text-brand-600'} />
             </div>
             <div>
               <p className="text-sm font-semibold text-slate-800">HTML / PDF</p>
@@ -156,12 +175,10 @@ export function ExportarSection() {
           <p className="text-xs text-slate-500 leading-relaxed flex-1">
             Gera <code className="font-mono bg-slate-100 px-1 rounded">README.html</code> com
             navegação lateral e layout visual completo. Abra no navegador e use{' '}
-            <strong>Ctrl+P → Salvar como PDF</strong> para gerar o PDF.
+            <strong>Ctrl+P → Salvar como PDF</strong>.
           </p>
           <Button
-            variant="secondary"
-            size="md"
-            fullWidth
+            variant="secondary" size="md" fullWidth
             loading={exportandoHtml}
             disabled={!projetoAberto || qualquerExportando}
             onClick={handleExportarHtml}

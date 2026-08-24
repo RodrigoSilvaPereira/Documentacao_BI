@@ -668,3 +668,6 @@ ${content}
 </body>
 </html>`;
 }
+
+export const GENERATOR_CSS = CSS;
+export const GENERATOR_JS  = JS;
