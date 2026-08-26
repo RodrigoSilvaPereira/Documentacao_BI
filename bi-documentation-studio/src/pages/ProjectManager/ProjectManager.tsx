@@ -15,6 +15,7 @@ import type { ProjetoRecente, BiPlatform } from '@models/app';
 import type { Documentacao } from '@models/schema';
 import { useLSStore } from '@store/useLSStore';
 import type { LookerStudioData } from '@models/schema.lookerstudio';
+import { cn } from '@utils/cn';
 
 interface MigracaoPendente {
   caminho:     string;

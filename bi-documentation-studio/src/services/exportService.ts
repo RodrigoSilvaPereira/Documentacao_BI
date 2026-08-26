@@ -58,12 +58,21 @@ async function buildImageMap(
     try {
       const abs = await join(pastaProjeto, caminho);
       if (!(await exists(abs))) continue;
-      const bytes  = await readFile(abs);
-      const ext    = caminho.split('.').pop()?.toLowerCase() ?? 'png';
-      const mime   = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg'
-                   : ext === 'webp'                  ? 'image/webp'
-                   :                                   `image/${ext}`;
-      const base64 = btoa(Array.from(bytes).map((b) => String.fromCharCode(b)).join(''));
+      const bytes = await readFile(abs) as Uint8Array;
+
+      const ext  = caminho.split('.').pop()?.toLowerCase() ?? 'png';
+      const mime = ext === 'jpg' || ext === 'jpeg'
+        ? 'image/jpeg'
+        : ext === 'webp'
+          ? 'image/webp'
+          : `image/${ext}`;
+
+      let binary = '';
+      for (const byte of bytes) {
+        binary += String.fromCharCode(byte);
+      }
+
+      const base64 = btoa(binary);
       map.set(caminho, `data:${mime};base64,${base64}`);
     } catch { /* mantém caminho relativo como fallback */ }
   }
