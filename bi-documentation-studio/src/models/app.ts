@@ -33,6 +33,7 @@ export interface ProjetoRecente {
   caminho:      string;
   nome:         string;
   ultimoAcesso: string;
+  biPlatform?:  BiPlatform;
 }
 
 export type PendingImagem =

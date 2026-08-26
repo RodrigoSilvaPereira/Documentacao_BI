@@ -123,7 +123,27 @@ export const exportService = {
     const pastaSnapshot = await join(pastaProjeto, 'exports', `historico-${slug}-${sufixo}`);
     await mkdir(pastaSnapshot, { recursive: true });
 
-    await writeTextFile(await join(pastaSnapshot, `documentacao-${sufixo}.json`), JSON.stringify(doc, null, 2));
+    // Fix: salva DocumentacaoV2 completo (com lsData) em vez do V1-compatível
+    if (biPlatform === 'LOOKER_STUDIO' && lsData) {
+      const v2Completo = {
+        versao_schema:       '2.0.0',
+        bi_platform:         'LOOKER_STUDIO',
+        projeto:             doc.projeto,
+        glossario:           doc.glossario,
+        metadados:           doc.metadados,
+        looker_studio_data:  lsData,
+      };
+      await writeTextFile(
+        await join(pastaSnapshot, `documentacao-${sufixo}.json`),
+        JSON.stringify(v2Completo, null, 2),
+      );
+    } else {
+      await writeTextFile(
+        await join(pastaSnapshot, `documentacao-${sufixo}.json`),
+        JSON.stringify(doc, null, 2),
+      );
+    }
+
     await writeTextFile(await join(pastaSnapshot, `${slug}-${sufixo}.md`), markdown);
 
     await copiarPastaRecursiva(

@@ -22,6 +22,7 @@ interface MigracaoPendente {
   nome:        string;
 }
 
+
 export function ProjectManager() {
   const navigate = useNavigate();
   const {
@@ -58,7 +59,12 @@ export function ProjectManager() {
 
     setDocumento(documento);
     abrirProjeto({ caminho, nome, biPlatform });
-    adicionarProjetoRecente({ caminho, nome, ultimoAcesso: new Date().toISOString() });
+    adicionarProjetoRecente({
+      caminho:      caminho,
+      nome,
+      ultimoAcesso: new Date().toISOString(),
+      biPlatform,   // ← novo
+    });
     navigate('/editor');
   }
 
@@ -321,15 +327,29 @@ interface RecentItemProps {
 }
 
 function RecentItem({ projeto, onClick, onRemove }: RecentItemProps) {
+  const isLS = projeto.biPlatform === 'LOOKER_STUDIO';
+
   return (
     <div className="flex items-center gap-2 group">
       <button
         onClick={onClick}
         className="flex items-center gap-3 flex-1 p-3 bg-slate-800/60 hover:bg-slate-800 rounded-xl border border-slate-700/50 transition-colors text-left min-w-0"
       >
-        <FolderOpen size={15} className="text-brand-400 flex-shrink-0" />
+        <FolderOpen size={15} className={isLS ? 'text-green-400 flex-shrink-0' : 'text-brand-400 flex-shrink-0'} />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-slate-100 truncate">{projeto.nome}</p>
+          <div className="flex items-center gap-2 min-w-0">
+            <p className="text-sm font-medium text-slate-100 truncate">{projeto.nome}</p>
+            {projeto.biPlatform && (
+              <span className={cn(
+                'flex-shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded-full border',
+                isLS
+                  ? 'bg-green-900/50 text-green-400 border-green-800'
+                  : 'bg-blue-900/50 text-blue-400 border-blue-800',
+              )}>
+                {isLS ? 'LS' : 'PBI'}
+              </span>
+            )}
+          </div>
           <p className="text-xs text-slate-500 truncate">{projeto.caminho}</p>
         </div>
         <div className="flex-shrink-0 text-right">
